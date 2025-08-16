@@ -1,0 +1,534 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}جزئیات سفارش | استایل شاپ{% endblock title %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --primary: #ff6b6b;
+        --secondary: #794afa;
+        --dark: #1e1e1e;
+        --light: #f8f9fa;
+        --gray: #e0e0e0;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
+        --border-radius: 8px;
+        --font-family: 'Vazir', 'Segoe UI', sans-serif;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 8px;
+        direction: rtl;
+    }
+
+    .order-detail {
+        margin: 16px 0;
+    }
+
+    .order-header {
+        background: white;
+        padding: 8px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 12px;
+    }
+
+    .order-header h2 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 8px;
+    }
+
+    .order-header p {
+        font-size: 0.8rem;
+        color: #555;
+        margin-bottom: 4px;
+    }
+
+    .order-status {
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: var(--border-radius);
+        display: inline-block;
+    }
+
+    .order-status.pending { background: rgba(255, 165, 0, 0.1); color: #ffa500; }
+    .order-status.shipped { background: rgba(0, 123, 255, 0.1); color: #007bff; }
+    .order-status.delivered { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+    .order-status.canceled { background: rgba(231, 76, 60, 0.1); color: #e74c3c; }
+
+    .order-actions {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+        flex-direction: column;
+    }
+
+    .action-btn {
+        padding: 8px;
+        background: var(--primary);
+        color: white;
+        text-decoration: none;
+        border-radius: var(--border-radius);
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+        transition: var(--transition);
+    }
+
+    .action-btn:hover {
+        background: #e05555;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    .order-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .order-items, .delivery-info, .payment-info {
+        background: white;
+        padding: 8px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+    }
+
+    .accordion-header {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--dark);
+        padding: 8px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--transition);
+    }
+
+    .accordion-header:hover {
+        background: var(--gray);
+    }
+
+    .accordion-header .fa-chevron-down {
+        transition: transform 0.3s ease;
+    }
+
+    .accordion-header.active .fa-chevron-down {
+        transform: rotate(180deg);
+    }
+
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .accordion-content.active {
+        max-height: 1000px; /* Adjust based on content */
+    }
+
+    .order-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+        padding: 8px;
+        border-bottom: 1px solid var(--gray);
+    }
+
+    .order-item:last-child {
+        border-bottom: none;
+    }
+
+    .order-item img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        border-radius: var(--border-radius);
+        background: var(--light);
+    }
+
+    .order-item-details h3 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 4px;
+    }
+
+    .order-item-details p {
+        font-size: 0.75rem;
+        color: #555;
+        margin-bottom: 4px;
+    }
+
+    .order-item-price {
+        font-size: 0.8rem;
+        color: var(--dark);
+        font-weight: 600;
+        margin-left: auto;
+    }
+
+    .price-info {
+        background: white;
+        padding: 8px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 12px;
+    }
+
+    .price-info div {
+        font-size: 0.8rem;
+        color: #555;
+        margin-bottom: 6px;
+    }
+
+    .price-info div strong {
+        font-size: 0.85rem;
+        color: var(--dark);
+    }
+
+    .delivery-info div, .payment-info div {
+        font-size: 0.75rem;
+        color: #555;
+        margin-bottom: 6px;
+    }
+
+    .delivery-info div strong, .payment-info div strong {
+        color: var(--dark);
+    }
+
+    .back-btn {
+        display: inline-block;
+        padding: 8px;
+        background: var(--light);
+        color: var(--dark);
+        border: 1px solid var(--gray);
+        border-radius: var(--border-radius);
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        transition: var(--transition);
+        margin-top: 12px;
+    }
+
+    .back-btn:hover {
+        background: var(--gray);
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 576px) {
+        .container {
+            padding: 0 6px;
+        }
+
+        .order-header h2 {
+            font-size: 1.2rem;
+        }
+
+        .order-header p {
+            font-size: 0.75rem;
+        }
+
+        .order-status {
+            font-size: 0.75rem;
+            padding: 3px 6px;
+        }
+
+        .accordion-header {
+            font-size: 0.8rem;
+            padding: 6px;
+        }
+
+        .order-item img {
+            width: 70px;
+            height: 70px;
+        }
+
+        .order-item-details h3 {
+            font-size: 0.85rem;
+        }
+
+        .order-item-details p {
+            font-size: 0.7rem;
+        }
+
+        .order-item-price {
+            font-size: 0.75rem;
+        }
+
+        .price-info div {
+            font-size: 0.75rem;
+        }
+
+        .price-info div strong {
+            font-size: 0.8rem;
+        }
+
+        .delivery-info div, .payment-info div {
+            font-size: 0.7rem;
+        }
+
+        .action-btn, .back-btn {
+            font-size: 0.75rem;
+            padding: 6px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .order-header {
+            padding: 12px;
+        }
+
+        .order-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .order-header p {
+            font-size: 0.85rem;
+        }
+
+        .order-status {
+            font-size: 0.85rem;
+        }
+
+        .accordion-header {
+            font-size: 0.9rem;
+            padding: 10px;
+        }
+
+        .order-item img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .order-item-details h3 {
+            font-size: 1rem;
+        }
+
+        .order-item-details p {
+            font-size: 0.8rem;
+        }
+
+        .order-item-price {
+            font-size: 0.85rem;
+        }
+
+        .price-info div {
+            font-size: 0.85rem;
+        }
+
+        .price-info div strong {
+            font-size: 0.9rem;
+        }
+
+        .delivery-info div, .payment-info div {
+            font-size: 0.8rem;
+        }
+
+        .action-btn, .back-btn {
+            font-size: 0.85rem;
+            padding: 10px;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .container {
+            padding: 0 12px;
+        }
+
+        .order-grid {
+            grid-template-columns: 2fr 1fr;
+        }
+
+        .order-header {
+            padding: 16px;
+        }
+
+        .order-header h2 {
+            font-size: 1.6rem;
+        }
+
+        .order-header p {
+            font-size: 0.9rem;
+        }
+
+        .order-status {
+            font-size: 0.9rem;
+            padding: 4px 10px;
+        }
+
+        .accordion-header {
+            font-size: 1rem;
+            padding: 12px;
+        }
+
+        .order-item img {
+            width: 120px;
+            height: 120px;
+        }
+
+        .order-item-details h3 {
+            font-size: 1.1rem;
+        }
+
+        .order-item-details p {
+            font-size: 0.85rem;
+        }
+
+        .order-item-price {
+            font-size: 0.9rem;
+        }
+
+        .price-info div {
+            font-size: 0.9rem;
+        }
+
+        .price-info div strong {
+            font-size: 1rem;
+        }
+
+        .delivery-info div, .payment-info div {
+            font-size: 0.85rem;
+        }
+
+        .action-btn, .back-btn {
+            font-size: 0.9rem;
+            padding: 12px;
+        }
+
+        .order-actions {
+            flex-direction: row;
+        }
+    }
+</style>
+
+<div class="container">
+    <section class="order-detail">
+        <div class="order-header">
+            <h2 class="section-title">جزئیات سفارش</h2>
+            <p>شماره سفارش: {{ order.order_number }}</p>
+            <p>تاریخ سفارش: {{ order.created_at|date:"Y/m/d - H:i" }}</p>
+            <p class="order-status {{ order.status|lower }}">{{ order.get_status_display }}</p>
+            <div class="order-actions">
+                <a href="{% url 'cart:track_order' order.order_number %}" class="action-btn">پیگیری سفارش</a>
+                <a href="{% url 'cart:download_invoice' order.order_number %}" class="action-btn">دریافت فاکتور</a>
+            </div>
+        </div>
+
+        <div class="order-grid">
+            <div class="order-items">
+                <div class="accordion-header active" data-target="items-content">
+                    <span>محصولات سفارش</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="accordion-content active" id="items-content">
+                    {% for item in order_items %}
+                        <div class="order-item">
+                            {% for image in item.product.images.all %}
+                                {% if image.is_main %}
+                                    <img src="{{ image.image.url|default:'/static/images/default.jpg' }}" alt="{{ item.product.name|default:'محصول بدون نام' }}">
+                                {% endif %}
+                            {% empty %}
+                                <img src="{% static 'images/default.jpg' %}" alt="محصول بدون تصویر">
+                            {% endfor %}
+                            <div class="order-item-details">
+                                <h3>{{ item.product.name|default:"محصول بدون نام" }}</h3>
+                                {% if item.color or item.size %}
+                                    <p>
+                                        {% if item.color %}رنگ: {{ item.color.name }}{% endif %}
+                                        {% if item.size %} - سایز: {{ item.size.name }}{% endif %}
+                                    </p>
+                                {% endif %}
+                                <p>کد محصول: {{ item.product.code|default:item.product.id }}</p>
+                            </div>
+                            <div class="order-item-price">{{ item.get_total_price|intcomma }} تومان × {{ item.quantity }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div>
+                <div class="price-info">
+                    <div class="accordion-header active" data-target="price-content">
+                        <span>اطلاعات مالی</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content active" id="price-content">
+                        <div>جمع کل محصولات: {{ order.total_price|intcomma }} تومان</div>
+                        <div>تخفیف: {{ order.total_discount|intcomma }} تومان</div>
+                        <div>هزینه ارسال: {{ order.shipping_cost|intcomma|default:"رایگان" }}</div>
+                        <div><strong>مبلغ قابل پرداخت: {{ order.final_price|intcomma }} تومان</strong></div>
+                    </div>
+                </div>
+                <div class="delivery-info">
+                    <div class="accordion-header active" data-target="delivery-content">
+                        <span>اطلاعات تحویل</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content active" id="delivery-content">
+                        <div><strong>روش ارسال:</strong> {{ order.shipping_method|default:"پست پیشتاز" }}</div>
+                        <div><strong>زمان تحویل:</strong> {{ order.delivery_time|default:"۳ روز کاری" }}</div>
+                        {% if order.tracking_number %}
+                            <div><strong>شماره مرسوله:</strong> {{ order.tracking_number }}</div>
+                        {% endif %}
+                        {% if order.updated_at %}
+                            <div><strong>تاریخ تحویل:</strong> {{ order.updated_at|date:"Y/m/d - H:i" }}</div>
+                        {% endif %}
+                        <div><strong>تحویل گیرنده:</strong> {{ order.address.full_name }}</div>
+                        <div><strong>آدرس:</strong> {{ order.address.province }}، {{ order.address.city }}، {{ order.address.address }}</div>
+                        <div><strong>کد پستی:</strong> {{ order.address.postal_code }}</div>
+                        <div><strong>تلفن:</strong> {{ order.address.phone_number }}</div>
+                    </div>
+                </div>
+                <div class="payment-info">
+                    <div class="accordion-header active" data-target="payment-content">
+                        <span>اطلاعات پرداخت</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content active" id="payment-content">
+                        <div><strong>روش پرداخت:</strong> {{ order.payment_method }}</div>
+                        <div><strong>تاریخ پرداخت:</strong> {{ order.created_at|date:"Y/m/d - H:i" }}</div>
+                        {% if order.payment_transaction_id %}
+                            <div><strong>کد رهگیری پرداخت:</strong> {{ order.payment_transaction_id }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="{% url 'cart:orders' %}" class="back-btn">بازگشت به سفارشات</a>
+    </section>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const target = document.getElementById(header.dataset.target);
+                const isActive = header.classList.contains('active');
+                header.classList.toggle('active');
+                target.classList.toggle('active');
+            });
+        });
+
+        // Collapse accordions on mobile by default
+        if (window.innerWidth <= 576) {
+            accordionHeaders.forEach(header => {
+                header.classList.remove('active');
+                document.getElementById(header.dataset.target).classList.remove('active');
+            });
+        }
+    });
+</script>
+{% endblock content %}

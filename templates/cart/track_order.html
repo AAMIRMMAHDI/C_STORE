@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}پیگیری سفارش | استایل شاپ{% endblock title %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --primary: #ff6b6b;
+        --secondary: #794afa;
+        --dark: #1e1e1e;
+        --light: #f8f9fa;
+        --gray: #e0e0e0;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
+        --border-radius: 8px;
+        --font-family: 'Vazir', 'Segoe UI', sans-serif;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 8px;
+        direction: rtl;
+    }
+
+    .tracking-section {
+        margin: 16px 0;
+        background: white;
+        padding: 8px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+    }
+
+    .tracking-section h2 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 12px;
+        position: relative;
+        padding-bottom: 6px;
+    }
+
+    .tracking-section h2:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 36px;
+        height: 3px;
+        background: var(--primary);
+    }
+
+    .tracking-info {
+        margin-bottom: 12px;
+    }
+
+    .tracking-info p {
+        font-size: 0.75rem;
+        color: #555;
+        margin-bottom: 6px;
+    }
+
+    .tracking-info p strong {
+        color: var(--dark);
+    }
+
+    .tracking-timeline {
+        position: relative;
+        padding: 8px 0;
+    }
+
+    .timeline-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+        position: relative;
+        padding-right: 32px;
+    }
+
+    .timeline-step:last-child {
+        margin-bottom: 0;
+    }
+
+    .timeline-icon {
+        width: 24px;
+        height: 24px;
+        background: var(--gray);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+        z-index: 1;
+    }
+
+    .timeline-step.active .timeline-icon {
+        background: var(--primary);
+    }
+
+    .timeline-step.completed .timeline-icon {
+        background: #28a745;
+    }
+
+    .timeline-step.canceled .timeline-icon {
+        background: #e74c3c;
+    }
+
+    .timeline-content {
+        flex: 1;
+    }
+
+    .timeline-content h3 {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 4px;
+    }
+
+    .timeline-content p {
+        font-size: 0.75rem;
+        color: #555;
+        margin-bottom: 2px;
+    }
+
+    .timeline-line {
+        position: absolute;
+        right: 19px;
+        top: 24px;
+        bottom: -12px;
+        width: 2px;
+        background: var(--gray);
+    }
+
+    .timeline-step:last-child .timeline-line {
+        display: none;
+    }
+
+    .timeline-step.active .timeline-line {
+        background: var(--primary);
+    }
+
+    .timeline-step.completed .timeline-line {
+        background: #28a745;
+    }
+
+    .back-btn {
+        display: inline-block;
+        padding: 8px;
+        background: var(--light);
+        color: var(--dark);
+        border: 1px solid var(--gray);
+        border-radius: var(--border-radius);
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        transition: var(--transition);
+        margin-top: 12px;
+        width: 100%;
+    }
+
+    .back-btn:hover {
+        background: var(--gray);
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 576px) {
+        .container {
+            padding: 0 6px;
+        }
+
+        .tracking-section h2 {
+            font-size: 1.2rem;
+        }
+
+        .tracking-info p {
+            font-size: 0.7rem;
+        }
+
+        .timeline-icon {
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+        }
+
+        .timeline-content h3 {
+            font-size: 0.8rem;
+        }
+
+        .timeline-content p {
+            font-size: 0.7rem;
+        }
+
+        .timeline-line {
+            right: 17px;
+            top: 20px;
+        }
+
+        .back-btn {
+            font-size: 0.75rem;
+            padding: 6px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .tracking-section {
+            padding: 12px;
+        }
+
+        .tracking-section h2 {
+            font-size: 1.5rem;
+        }
+
+        .tracking-info p {
+            font-size: 0.8rem;
+        }
+
+        .timeline-icon {
+            width: 28px;
+            height: 28px;
+            font-size: 0.9rem;
+        }
+
+        .timeline-content h3 {
+            font-size: 0.9rem;
+        }
+
+        .timeline-content p {
+            font-size: 0.8rem;
+        }
+
+        .timeline-line {
+            right: 21px;
+            top: 28px;
+        }
+
+        .back-btn {
+            font-size: 0.85rem;
+            padding: 10px;
+            width: auto;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .container {
+            padding: 0 12px;
+        }
+
+        .tracking-section {
+            padding: 16px;
+        }
+
+        .tracking-section h2 {
+            font-size: 1.6rem;
+        }
+
+        .tracking-info p {
+            font-size: 0.85rem;
+        }
+
+        .timeline-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 1rem;
+        }
+
+        .timeline-content h3 {
+            font-size: 1rem;
+        }
+
+        .timeline-content p {
+            font-size: 0.85rem;
+        }
+
+        .timeline-line {
+            right: 25px;
+            top: 36px;
+        }
+
+        .back-btn {
+            font-size: 0.9rem;
+            padding: 12px;
+        }
+    }
+</style>
+
+<div class="container">
+    <section class="tracking-section">
+        <h2>پیگیری سفارش {{ order.order_number }}</h2>
+        <div class="tracking-info">
+            <p><strong>وضعیت:</strong> {{ tracking_info.status }}</p>
+            {% if tracking_info.tracking_number %}
+                <p><strong>شماره مرسوله:</strong> {{ tracking_info.tracking_number }}</p>
+            {% endif %}
+            <p><strong>آخرین به‌روزرسانی:</strong> {{ tracking_info.last_updated|date:"Y/m/d - H:i" }}</p>
+        </div>
+        <div class="tracking-timeline">
+            {% for step in tracking_info.history %}
+                <div class="timeline-step {% if step.status == tracking_info.status %}active{% elif step.completed %}completed{% elif step.status == 'CANCELED' %}canceled{% endif %}">
+                    <div class="timeline-icon">
+                        {% if step.status == 'PENDING' %}
+                            <i class="fas fa-clock"></i>
+                        {% elif step.status == 'SHIPPED' %}
+                            <i class="fas fa-truck"></i>
+                        {% elif step.status == 'DELIVERED' %}
+                            <i class="fas fa-check-circle"></i>
+                        {% elif step.status == 'CANCELED' %}
+                            <i class="fas fa-times-circle"></i>
+                        {% endif %}
+                    </div>
+                    <div class="timeline-content">
+                        <h3>{{ step.status_display }}</h3>
+                        <p>{{ step.date|date:"Y/m/d - H:i" }}</p>
+                        <p>{{ step.description|default:"بدون توضیحات" }}</p>
+                    </div>
+                    <div class="timeline-line"></div>
+                </div>
+            {% empty %}
+                <p style="text-align: center; color: #555; font-size: 0.75rem;">هیچ اطلاعاتی برای پیگیری موجود نیست.</p>
+            {% endfor %}
+        </div>
+        <a href="{% url 'cart:orders' %}" class="back-btn">بازگشت به سفارشات</a>
+    </section>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Optional: Add fade-in animation for timeline steps
+        /*
+        const timelineSteps = document.querySelectorAll('.timeline-step');
+        timelineSteps.forEach((step, index) => {
+            setTimeout(() => {
+                step.style.opacity = '1';
+                step.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+        */
+    });
+</script>
+{% endblock content %}

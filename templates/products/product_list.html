@@ -1,0 +1,978 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}استایل شاپ | فروشگاه آنلاین پوشاک{% endblock title %}
+{% block content %}
+<style>
+    :root {
+        --primary: #ff6b6b;
+        --secondary: #794afa;
+        --dark: #1e1e1e;
+        --light: #f8f9fa;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --transition: all 0.2s ease;
+        --border-radius: 12px;
+        --font-family: 'Vazir', 'Segoe UI', sans-serif;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 16px;
+        direction: rtl;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 12px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .search-bar {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 180px;
+    }
+
+    .search-bar input {
+        flex: 1;
+        padding: 10px 14px;
+        border: 1px solid #e0e0e0;
+        border-radius: var(--border-radius);
+        font-size: 0.9rem;
+        font-family: var(--font-family);
+        transition: border-color var(--transition);
+    }
+
+    .search-bar input:focus {
+        border-color: var(--primary);
+        outline: none;
+    }
+
+    .search-bar button {
+        padding: 10px 18px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .search-bar button:hover {
+        background: #ff5252;
+    }
+
+    .filter-bar .sort-options {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 160px;
+    }
+
+    .filter-bar .sort-options select {
+        padding: 10px 20px 10px 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: var(--border-radius);
+        font-size: 0.9rem;
+        font-family: var(--font-family);
+        cursor: pointer;
+        background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231e1e1e' width='16px' height='16px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat left 8px center;
+        appearance: none;
+        transition: border-color var(--transition);
+        flex: 1;
+    }
+
+    .filter-bar .sort-options select:focus {
+        border-color: var(--primary);
+        outline: none;
+    }
+
+    .filter-bar .more-filters-btn {
+        padding: 10px 18px;
+        background: var(--light);
+        color: var(--dark);
+        border: 1px solid #e0e0e0;
+        border-radius: var(--border-radius);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .filter-bar .more-filters-btn:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    /* Mobile Sort Button */
+    .mobile-sort-btn {
+        display: none;
+        padding: 10px;
+        background: var(--light);
+        color: var(--dark);
+        border: 1px solid #e0e0e0;
+        border-radius: var(--border-radius);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        align-items: center;
+        gap: 6px;
+        justify-content: center;
+    }
+
+    .mobile-sort-btn:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    /* Filter Modal */
+    .filter-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .filter-modal.active {
+        display: flex;
+    }
+
+    .filter-modal-content {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 20px;
+        width: 90%;
+        max-width: 360px;
+        max-height: 80vh;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .filter-modal-content .close-modal {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        font-size: 1.1rem;
+        color: var(--dark);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .filter-modal-content .close-modal:hover {
+        color: var(--primary);
+    }
+
+    /* Sort Modal */
+    .sort-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .sort-modal.active {
+        display: flex;
+    }
+
+    .sort-modal-content {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 20px;
+        width: 90%;
+        max-width: 300px;
+        position: relative;
+    }
+
+    .sort-modal-content .close-sort-modal {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        font-size: 1.1rem;
+        color: var(--dark);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .sort-modal-content .close-sort-modal:hover {
+        color: var(--primary);
+    }
+
+    .sort-options-list {
+        list-style: none;
+        margin-top: 20px;
+    }
+
+    .sort-options-list li {
+        margin-bottom: 12px;
+    }
+
+    .sort-options-list a {
+        display: block;
+        padding: 10px;
+        background: var(--light);
+        color: var(--dark);
+        border-radius: var(--border-radius);
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .sort-options-list a:hover,
+    .sort-options-list a.active {
+        background: var(--primary);
+        color: white;
+    }
+
+    .filter-section {
+        margin-bottom: 12px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        cursor: pointer;
+    }
+
+    .filter-header h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .filter-header i {
+        font-size: 0.9rem;
+        color: var(--primary);
+        transition: var(--transition);
+    }
+
+    .filter-header.active i {
+        transform: rotate(180deg);
+    }
+
+    .filter-content {
+        max-height: 0;
+        overflow: hidden;
+        padding: 0 10px;
+        transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+
+    .filter-content.active {
+        max-height: 400px;
+        padding: 10px;
+    }
+
+    .filter-content ul {
+        list-style: none;
+    }
+
+    .filter-content li {
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .filter-content input[type="checkbox"] {
+        accent-color: var(--primary);
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    .filter-content label {
+        font-size: 0.85rem;
+        color: var(--dark);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .filter-content label:hover {
+        color: var(--primary);
+    }
+
+    .colors {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .color {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: var(--transition);
+    }
+
+    .color input:checked + label {
+        border-color: var(--dark);
+        box-shadow: 0 0 0 2px var(--primary);
+    }
+
+    .color:hover {
+        border-color: var(--dark);
+    }
+
+    .price-range {
+        margin-bottom: 10px;
+    }
+
+    .price-range label {
+        font-size: 0.85rem;
+        color: var(--dark);
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .price-range input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #e0e0e0;
+        border-radius: var(--border-radius);
+        font-size: 0.85rem;
+        font-family: var(--font-family);
+        transition: border-color var(--transition);
+    }
+
+    .price-range input:focus {
+        border-color: var(--primary);
+        outline: none;
+    }
+
+    .filter-btn {
+        width: 100%;
+        padding: 10px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .filter-btn:hover {
+        background: #ff5252;
+    }
+
+    .clear-filter-btn {
+        display: block;
+        text-align: center;
+        margin-top: 10px;
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+    .clear-filter-btn:hover {
+        color: var(--dark);
+    }
+
+    /* Products Section */
+    .products-section {
+        flex: 1;
+    }
+
+    .products-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .products-header h2 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--dark);
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .product-card {
+        background: white;
+        border: 1px solid #f0f0f0;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        transition: var(--transition);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-card:hover {
+        border-color: #e0e0e0;
+        box-shadow: var(--shadow);
+        transform: translateY(-2px);
+    }
+
+    .product-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--primary);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 16px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        z-index: 2;
+    }
+
+    .product-img {
+        height: 240px;
+        overflow: hidden;
+        position: relative;
+        background: #f9f9f9;
+    }
+
+    .product-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: var(--transition);
+    }
+
+    .product-card:hover .product-img img {
+        transform: scale(1.03);
+    }
+
+    .product-info {
+        padding: 14px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-name {
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 6px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .product-name a {
+        text-decoration: none;
+        color: var(--dark);
+        transition: var(--transition);
+    }
+
+    .product-name a:hover {
+        color: var(--primary);
+    }
+
+    .product-price {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+        color: var(--primary);
+        font-size: 1rem;
+        margin-top: auto;
+    }
+
+    .old-price {
+        text-decoration: line-through;
+        color: #888;
+        font-size: 0.85rem;
+        font-weight: 400;
+    }
+
+    .view-product {
+        display: block;
+        width: 100%;
+        padding: 8px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        text-align: center;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: var(--transition);
+        margin-top: 10px;
+    }
+
+    .view-product:hover {
+        background: #ff5252;
+    }
+
+    /* Pagination */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        margin: 24px 0;
+    }
+
+    .pagination a, .pagination span {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: var(--border-radius);
+        color: var(--dark);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+    .pagination a:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .pagination .active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .filter-bar {
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .search-bar {
+            flex: 1;
+            min-width: 100%;
+        }
+
+        .sort-options {
+            flex: 1;
+            min-width: 48%;
+        }
+
+        .more-filters-btn {
+            flex: 1;
+            min-width: 48%;
+        }
+
+        .products-grid {
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .mobile-sort-btn {
+            display: flex;
+        }
+        
+        .filter-bar .sort-options.desktop-sort {
+            display: none;
+        }
+        
+        .filter-bar {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 8px;
+        }
+        
+        .search-bar {
+            grid-column: 1 / span 3;
+        }
+        
+        .more-filters-btn {
+            margin: 0;
+        }
+
+        .products-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .product-img {
+            height: 180px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding: 0 10px;
+        }
+
+        .filter-bar {
+            grid-template-columns: 1fr auto;
+        }
+        
+        .search-bar {
+            grid-column: 1 / span 2;
+        }
+
+        .product-img {
+            height: 160px;
+        }
+
+        .products-header h2 {
+            font-size: 1.2rem;
+        }
+
+        .filter-bar .sort-options select,
+        .filter-bar .more-filters-btn,
+        .search-bar button {
+            font-size: 0.8rem;
+        }
+
+        .search-bar input,
+        .price-range input {
+            font-size: 0.8rem;
+        }
+
+        .filter-header h3 {
+            font-size: 0.9rem;
+        }
+
+        .filter-content label {
+            font-size: 0.8rem;
+        }
+
+        .filter-btn,
+        .clear-filter-btn,
+        .view-product {
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="products-section">
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="search-bar">
+                <form id="filter-form" method="get">
+                    <input type="text" name="search" placeholder="جستجوی محصول..." value="{{ request.GET.search|default:'' }}">
+                    <button type="submit">جستجو</button>
+                </form>
+            </div>
+            
+            <div class="sort-options desktop-sort">
+                <select onchange="window.location.href=this.value">
+                    <option value="?sort=default{% for key, value in request.GET.items %}{% if key != 'sort' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">مرتب‌سازی پیش‌فرض</option>
+                    <option value="?sort=most_viewed{% for key, value in request.GET.items %}{% if key != 'sort' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" {% if request.GET.sort == 'most_viewed' %}selected{% endif %}>پربازدیدترین</option>
+                    <option value="?sort=best_selling{% for key, value in request.GET.items %}{% if key != 'sort' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" {% if request.GET.sort == 'best_selling' %}selected{% endif %}>پرفروش‌ترین</option>
+                    <option value="?sort=newest{% for key, value in request.GET.items %}{% if key != 'sort' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" {% if request.GET.sort == 'newest' %}selected{% endif %}>جدیدترین</option>
+                    <option value="?sort=cheapest{% for key, value in request.GET.items %}{% if key != 'sort' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" {% if request.GET.sort == 'cheapest' %}selected{% endif %}>ارزان‌ترین</option>
+                    <option value="?sort=most_expensive{% for key, value in request.GET.items %}{% if key != 'sort' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" {% if request.GET.sort == 'most_expensive' %}selected{% endif %}>گران‌ترین</option>
+                </select>
+            </div>
+
+            <button class="mobile-sort-btn" id="mobile-sort-btn">
+                <i class="fas fa-sort"></i>
+                مرتب‌سازی
+            </button>
+
+            <button class="more-filters-btn" id="more-filters-btn">فیلترهای بیشتر <i class="fas fa-filter"></i></button>
+        </div>
+
+        <!-- Filter Modal -->
+        <div class="filter-modal" id="filter-modal">
+            <div class="filter-modal-content">
+                <i class="fas fa-times close-modal" id="close-modal"></i>
+                <form method="get" id="modal-filter-form">
+                    <!-- Category Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header" data-toggle="category">
+                            <h3><i class="fas fa-list"></i> دسته‌بندی‌ها</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-content" id="category-content">
+                            <ul>
+                                <li>
+                                    <input type="checkbox" name="category" value="all" id="cat-all" {% if not request.GET.category %}checked{% endif %}>
+                                    <label for="cat-all">همه محصولات</label>
+                                </li>
+                                {% for cat in categories %}
+                                    <li>
+                                        <input type="checkbox" name="category" value="{{ cat.category }}" id="cat-{{ cat.category|slugify }}" {% if cat.category in request.GET.category %}checked{% endif %}>
+                                        <label for="cat-{{ cat.category|slugify }}">{{ cat.category }}</label>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Color Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header" data-toggle="color">
+                            <h3><i class="fas fa-palette"></i> رنگ‌بندی</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-content" id="color-content">
+                            <div class="colors">
+                                {% for color in colors %}
+                                    <input type="checkbox" name="color" value="{{ color.hex_code }}" id="color-{{ color.hex_code|slugify }}-{{ color.name|slugify }}" {% if color.hex_code in request.GET.color %}checked{% endif %}>
+                                    <label for="color-{{ color.hex_code|slugify }}-{{ color.name|slugify }}" class="color" style="background: {{ color.hex_code }};" title="{{ color.name }}"></label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Price Range Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header" data-toggle="price">
+                            <h3><i class="fas fa-money-bill"></i> محدوده قیمت</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-content" id="price-content">
+                            <div class="price-range">
+                                <label for="min-price">حداقل:</label>
+                                <input type="number" name="min_price" id="min-price" value="{{ request.GET.min_price|default:'' }}" placeholder="0">
+                            </div>
+                            <div class="price-range">
+                                <label for="max-price">حداکثر:</label>
+                                <input type="number" name="max_price" id="max-price" value="{{ request.GET.max_price|default:'' }}" placeholder="1000000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Size Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header" data-toggle="size">
+                            <h3><i class="fas fa-ruler"></i> سایز</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-content" id="size-content">
+                            <ul>
+                                {% for size in sizes %}
+                                    <li>
+                                        <input type="checkbox" name="size" value="{{ size.name }}" id="size-{{ size.name|slugify }}" {% if size.name in request.GET.size %}checked{% endif %}>
+                                        <label for="size-{{ size.name|slugify }}">{{ size.name }}</label>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Brand Filter -->
+                    <div class="filter-section">
+                        <div class="filter-header" data-toggle="brand">
+                            <h3><i class="fas fa-tags"></i> برندها</h3>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-content" id="brand-content">
+                            <ul>
+                                <li>
+                                    <input type="checkbox" name="brand" value="all" id="brand-all" {% if not request.GET.brand %}checked{% endif %}>
+                                    <label for="brand-all">همه برندها</label>
+                                </li>
+                                {% for brand in brands %}
+                                    <li>
+                                        <input type="checkbox" name="brand" value="{{ brand.brand }}" id="brand-{{ brand.brand|slugify }}" {% if brand.brand in request.GET.brand %}checked{% endif %}>
+                                        <label for="brand-{{ brand.brand|slugify }}">{{ brand.brand }}</label>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="filter-btn">اعمال فیلتر</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sort Modal (Will be added dynamically) -->
+
+        <!-- Products Grid -->
+        <div class="products-header">
+            <h2>تمام محصولات</h2>
+        </div>
+
+        <div class="products-grid">
+            {% for product in products %}
+                <div class="product-card">
+                    {% if product.is_new %}
+                        <span class="product-badge">جدید</span>
+                    {% elif product.discount_price %}
+                        <span class="product-badge">تخفیف</span>
+                    {% endif %}
+                    <div class="product-img">
+                        {% for image in product.images.all %}
+                            {% if image.is_main %}
+                                <img src="{{ image.image.url }}" alt="{{ product.name|default:'محصول بدون نام' }}">
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name"><a href="{% url 'products:product_detail' product.slug %}">{{ product.name|default:'محصول بدون نام' }}</a></h3>
+                        <div class="product-price">
+                            {% if product.discount_price %}
+                                <span class="old-price">{{ product.price }} تومان</span>
+                                <span>{{ product.discount_price }} تومان</span>
+                            {% else %}
+                                <span>{{ product.price }} تومان</span>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'products:product_detail' product.slug %}" class="view-product">مشاهده محصول</a>
+                    </div>
+                </div>
+            {% empty %}
+                <p style="text-align: center; color: var(--dark); font-size: 0.9rem; padding: 32px 0;">هیچ محصولی یافت نشد.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            {% if products.has_previous %}
+                <a href="?page={{ products.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&laquo;</a>
+            {% endif %}
+            {% for num in products.paginator.page_range %}
+                {% if products.number == num %}
+                    <span class="active">{{ num }}</span>
+                {% else %}
+                    <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            {% if products.has_next %}
+                <a href="?page={{ products.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">&raquo;</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Toggle filter modal
+    const moreFiltersBtn = document.getElementById('more-filters-btn');
+    const filterModal = document.getElementById('filter-modal');
+    const closeModal = document.getElementById('close-modal');
+
+    if (moreFiltersBtn && filterModal && closeModal) {
+        moreFiltersBtn.addEventListener('click', () => {
+            filterModal.classList.add('active');
+        });
+
+        closeModal.addEventListener('click', () => {
+            filterModal.classList.remove('active');
+        });
+
+        filterModal.addEventListener('click', (e) => {
+            if (e.target === filterModal) {
+                filterModal.classList.remove('active');
+            }
+        });
+    }
+
+    // Create and handle sort modal
+    const mobileSortBtn = document.getElementById('mobile-sort-btn');
+    const sortModal = document.createElement('div');
+    sortModal.className = 'sort-modal';
+    sortModal.id = 'sort-modal';
+    sortModal.innerHTML = `
+        <div class="sort-modal-content">
+            <i class="fas fa-times close-sort-modal" id="close-sort-modal"></i>
+            <h3>مرتب‌سازی بر اساس</h3>
+            <ul class="sort-options-list">
+                <li><a href="?sort=default{% for key, value in request.GET.items %}{% if key != 'sort' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="{% if not request.GET.sort or request.GET.sort == 'default' %}active{% endif %}">پیش‌فرض</a></li>
+                <li><a href="?sort=most_viewed{% for key, value in request.GET.items %}{% if key != 'sort' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="{% if request.GET.sort == 'most_viewed' %}active{% endif %}">پربازدیدترین</a></li>
+                <li><a href="?sort=best_selling{% for key, value in request.GET.items %}{% if key != 'sort' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="{% if request.GET.sort == 'best_selling' %}active{% endif %}">پرفروش‌ترین</a></li>
+                <li><a href="?sort=newest{% for key, value in request.GET.items %}{% if key != 'sort' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="{% if request.GET.sort == 'newest' %}active{% endif %}">جدیدترین</a></li>
+                <li><a href="?sort=cheapest{% for key, value in request.GET.items %}{% if key != 'sort' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="{% if request.GET.sort == 'cheapest' %}active{% endif %}">ارزان‌ترین</a></li>
+                <li><a href="?sort=most_expensive{% for key, value in request.GET.items %}{% if key != 'sort' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="{% if request.GET.sort == 'most_expensive' %}active{% endif %}">گران‌ترین</a></li>
+            </ul>
+        </div>
+    `;
+    document.body.appendChild(sortModal);
+
+    if (mobileSortBtn) {
+        mobileSortBtn.addEventListener('click', () => {
+            sortModal.classList.add('active');
+        });
+    }
+
+    const closeSortModal = document.getElementById('close-sort-modal');
+    if (closeSortModal) {
+        closeSortModal.addEventListener('click', () => {
+            sortModal.classList.remove('active');
+        });
+    }
+
+    sortModal.addEventListener('click', (e) => {
+        if (e.target === sortModal) {
+            sortModal.classList.remove('active');
+        }
+    });
+
+    // Accordion for filter sections
+    document.querySelectorAll('.filter-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('i');
+            const isActive = content.classList.contains('active');
+
+            document.querySelectorAll('.filter-content').forEach(c => {
+                c.classList.remove('active');
+                c.previousElementSibling.querySelector('i').classList.remove('active');
+            });
+
+            if (!isActive) {
+                content.classList.add('active');
+                icon.classList.add('active');
+            }
+        });
+    });
+
+    // Auto-submit filter form on input change
+    document.querySelectorAll('.filter-section input').forEach(input => {
+        input.addEventListener('change', () => {
+            input.closest('form').submit();
+        });
+    });
+</script>
+{% endblock content %}

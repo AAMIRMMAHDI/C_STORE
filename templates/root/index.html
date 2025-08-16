@@ -1,0 +1,821 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}استایل شاپ | فروشگاه آنلاین پوشاک{% endblock title %}
+{% block content %}
+<style>
+    :root {
+        --primary: #ff6b6b;
+        --secondary: #794afa;
+        --dark: #1e1e1e;
+        --light: #f8f9fa;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Arial', sans-serif;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        direction: rtl;
+    }
+
+    section {
+        margin-bottom: 50px;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        background: url("https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80") no-repeat center/cover;
+        padding: 100px 20px;
+        text-align: center;
+        color: white;
+        position: relative;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.65);
+    }
+
+    .hero-section h1 {
+        font-size: clamp(2rem, 5vw, 2.5rem);
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-section p {
+        font-size: clamp(1rem, 2.5vw, 1.2rem);
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-section a {
+        display: inline-block;
+        padding: 12px 25px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        margin: 5px;
+        transition: var(--transition);
+    }
+
+    .hero-section a:first-child {
+        background: var(--primary);
+        color: white;
+    }
+
+    .hero-section a:first-child:hover {
+        background: #ff5252;
+    }
+
+    .hero-section a:last-child {
+        background: transparent;
+        border: 2px solid white;
+        color: white;
+    }
+
+    .hero-section a:last-child:hover {
+        background: white;
+        color: var(--dark);
+    }
+
+    /* Section Title */
+    .section-title {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        position: relative;
+        padding-bottom: 10px;
+        color: var(--dark);
+        text-align: right;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 50px;
+        height: 3px;
+        background: var(--primary);
+    }
+
+    /* Products Grid */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 25px;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .product-card img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+    }
+
+    .product-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--primary);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 0.8rem;
+    }
+
+    .product-info {
+        padding: 15px;
+    }
+
+    .product-info h3 {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+    }
+
+    .product-info p {
+        font-size: 0.9rem;
+        color: var(--dark);
+        margin-bottom: 8px;
+    }
+
+    .product-price {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    .product-price del {
+        color: #999;
+        font-size: 0.9rem;
+        margin-left: 8px;
+    }
+
+    /* Collections Grid */
+    .collections-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+    }
+
+    .collection-card {
+        position: relative;
+        height: 280px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .collection-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .collection-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        opacity: 0.3;
+        transition: opacity 0.3s ease;
+    }
+
+    .collection-card:hover .collection-overlay {
+        opacity: 1;
+    }
+
+    .collection-overlay h3 {
+        font-size: 1.4rem;
+        margin-bottom: 15px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    .collection-overlay a {
+        padding: 10px 20px;
+        background: var(--primary);
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        transition: var(--transition);
+    }
+
+    .collection-overlay a:hover {
+        background: #ff5252;
+    }
+
+    /* Promo Banner */
+    .promo-banner {
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+        color: white;
+        padding: 40px 20px;
+        border-radius: 10px;
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    .promo-content {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .promo-title {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .promo-text {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+
+    .timer {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .timer-item {
+        background: rgba(255, 255, 255, 0.3);
+        padding: 8px 12px;
+        border-radius: 5px;
+        min-width: 50px;
+        text-align: center;
+    }
+
+    .timer-number {
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .timer-text {
+        font-size: 0.7rem;
+        opacity: 0.9;
+    }
+
+    .btn {
+        padding: 12px 25px;
+        background: var(--primary);
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+
+    .btn:hover {
+        background: #ff5252;
+    }
+
+    /* About Section */
+    .about-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: center;
+    }
+
+    .about-img {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+    }
+
+    .about-img img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .about-content h2 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+        color: var(--primary);
+    }
+
+    .about-content p {
+        font-size: 1rem;
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+
+    .features-list {
+        margin-top: 20px;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .feature-icon {
+        background: var(--primary);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 10px;
+        flex-shrink: 0;
+    }
+
+    .feature-text h3 {
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+    }
+
+    .feature-text p {
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    /* Contact Section */
+    .contact-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+    }
+
+    .contact-info {
+        background: white;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: var(--shadow);
+    }
+
+    .contact-info h2 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        color: var(--primary);
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .info-icon {
+        background: var(--primary);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 10px;
+        flex-shrink: 0;
+    }
+
+    .info-text h3 {
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+    }
+
+    .info-text p {
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .social-links a {
+        width: 40px;
+        height: 40px;
+        background: var(--light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--dark);
+        transition: var(--transition);
+    }
+
+    .social-links a:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-3px);
+    }
+
+    .contact-form {
+        background: white;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: var(--shadow);
+    }
+
+    .contact-form h2 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        color: var(--primary);
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        transition: var(--transition);
+    }
+
+    .form-group textarea {
+        height: 120px;
+        resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+        outline: none;
+    }
+
+    .contact-form button {
+        width: 100%;
+        padding: 12px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .contact-form button:hover {
+        background: #ff5252;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .about-section,
+        .contact-section {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-section {
+            padding: 80px 15px;
+        }
+
+        .hero-section h1 {
+            font-size: 2rem;
+        }
+
+        .hero-section p {
+            font-size: 1.1rem;
+        }
+
+        .products-grid {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .collections-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+    }
+
+    @media (max-width: 767px) {
+        .container {
+            padding: 0 10px;
+        }
+
+        .hero-section {
+            padding: 50px 10px;
+        }
+
+        .hero-section h1 {
+            font-size: 1.6rem;
+        }
+
+        .hero-section p {
+            font-size: 0.9rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+        }
+
+        .products-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .product-card img {
+            height: 200px;
+        }
+
+        .collections-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .collection-card {
+            height: 220px;
+        }
+
+        .promo-title {
+            font-size: 1.5rem;
+        }
+
+        .promo-text {
+            font-size: 0.9rem;
+        }
+
+        .timer {
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .timer-item {
+            min-width: 45px;
+            padding: 6px 10px;
+        }
+
+        .timer-number {
+            font-size: 1rem;
+        }
+
+        .timer-text {
+            font-size: 0.6rem;
+        }
+    }
+</style>
+
+<div class="container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <h1>کالکشن جدید پاییزه ۱۴۰۴</h1>
+        <p>جدیدترین طرح‌های ما با بهترین پارچه‌ها و دوخت حرفه‌ای</p>
+        <a href="{% url 'products:product_list' %}">مشاهده محصولات</a>
+        <a href="{% url 'products:product_list' %}">خرید آنلاین</a>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="products-section">
+        <h2 class="section-title">محصولات ویژه</h2>
+        <div class="products-grid">
+            {% for product in featured_products %}
+                <div class="product-card">
+                    {% if product.is_new %}
+                        <span class="product-badge">جدید</span>
+                    {% elif product.discount_price %}
+                        <span class="product-badge">تخفیف</span>
+                    {% endif %}
+                    {% for image in product.images.all %}
+                        {% if image.is_main %}
+                            <img src="{{ image.image.url }}" alt="{{ product.name }}">
+                        {% endif %}
+                    {% endfor %}
+                    <div class="product-info">
+                        <h3>{{ product.category }}</h3>
+                        <p>{{ product.name }}</p>
+                        <div class="product-price">
+                            {% if product.discount_price %}
+                                <del>{{ product.price }} تومان</del>
+                                {{ product.discount_price }} تومان
+                            {% else %}
+                                {{ product.price }} تومان
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>محصولی برای نمایش وجود ندارد.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Collections -->
+    <section class="collections-section">
+        <h2 class="section-title">کالکشن‌های ویژه</h2>
+        <div class="collections-grid">
+            <div class="collection-card">
+                <img src="https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="کالکشن مردانه">
+                <div class="collection-overlay">
+                    <h3>کالکشن مردانه</h3>
+                    <a href="{% url 'products:product_list' %}">مشاهده محصولات</a>
+                </div>
+            </div>
+            <div class="collection-card">
+                <img src="https://images.unsplash.com/photo-1520006403909-838d6b92c22e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="کالکشن زنانه">
+                <div class="collection-overlay">
+                    <h3>کالکشن زنانه</h3>
+                    <a href="{% url 'products:product_list' %}">مشاهده محصولات</a>
+                </div>
+            </div>
+            <div class="collection-card">
+                <img src="https://images.unsplash.com/photo-1551232864-3f0890e580d9?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="کالکشن بچگانه">
+                <div class="collection-overlay">
+                    <h3>کالکشن بچگانه</h3>
+                    <a href="{% url 'products:product_list' %}">مشاهده محصولات</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Promo Banner -->
+    <section class="section">
+        <div class="promo-banner">
+            <div class="promo-content">
+                <h2 class="promo-title">حراج ویژه فصل</h2>
+                <p class="promo-text">تا ۵۰٪ تخفیف برای کالکشن تابستانه</p>
+                <div class="timer">
+                    <div class="timer-item">
+                        <div class="timer-number" id="days">۰۳</div>
+                        <div class="timer-text">روز</div>
+                    </div>
+                    <div class="timer-item">
+                        <div class="timer-number" id="hours">۱۲</div>
+                        <div class="timer-text">ساعت</div>
+                    </div>
+                    <div class="timer-item">
+                        <div class="timer-number" id="minutes">۴۵</div>
+                        <div class="timer-text">دقیقه</div>
+                    </div>
+                    <div class="timer-item">
+                        <div class="timer-number" id="seconds">۳۰</div>
+                        <div class="timer-text">ثانیه</div>
+                    </div>
+                </div>
+                <a href="#collections" class="btn">همین حالا خرید کنید</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section" id="about">
+        <h2 class="section-title">درباره ما</h2>
+        <div class="about-section">
+            <div class="about-img">
+                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="درباره ما">
+            </div>
+            <div class="about-content">
+                <h2>داستان ما</h2>
+                <p>استایل شاپ در سال ۱۳۹۵ با هدف ارائه پوشاک باکیفیت تأسیس شد. ما به دنبال ارائه بهترین استایل با قیمت مناسب هستیم.</p>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h3>کیفیت عالی</h3>
+                            <p>بهترین مواد اولیه و دوخت حرفه‌ای</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h3>تحویل سریع</h3>
+                            <p>ارسال سریع به سراسر کشور</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h3>ضمانت بازگشت</h3>
+                            <p>۷ روز ضمانت بازگشت کالا</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section" id="contact">
+        <h2 class="section-title">تماس با ما</h2>
+        <div class="contact-section">
+            <div class="contact-info">
+                <h2>اطلاعات تماس</h2>
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="info-text">
+                        <h3>آدرس</h3>
+                        <p>تهران، خیابان ولیعصر، پلاک ۱۲۳۴</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="info-text">
+                        <h3>تلفن</h3>
+                        <p>۰۲۱-۱۲۳۴۵۶۷۸</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="info-text">
+                        <h3>ایمیل</h3>
+                        <p>info@styleshop.ir</p>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="info-text">
+                        <h3>ساعات کاری</h3>
+                        <p>شنبه تا چهارشنبه: ۹ صبح تا ۸ شب<br>پنجشنبه: ۹ صبح تا ۴ بعدازظهر</p>
+                    </div>
+                </div>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="contact-form">
+                <h2>ارسال پیام</h2>
+                <form>
+                    <div class="form-group">
+                        <label for="name">نام</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">ایمیل</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">پیام شما</label>
+                        <textarea id="message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn">ارسال</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock content %}

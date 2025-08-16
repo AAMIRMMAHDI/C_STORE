@@ -1,0 +1,438 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}استایل شاپ | تماس با ما{% endblock title %}
+
+{% block content %}
+<div class="contact-page">
+    <!-- بخش اطلاعات تماس -->
+    <div class="contact-info-section">
+        <h1 class="contact-title">تماس با ما</h1>
+        
+        {% if messages %}
+        <div class="contact-messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="contact-grid">
+            <!-- اطلاعات تماس -->
+            <div class="contact-details">
+                <h2>اطلاعات تماس</h2>
+                
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                        <h3>آدرس</h3>
+                        <p>تهران، خیابان ولیعصر، کوچه فلان، پلاک ۱۲۳</p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <div>
+                        <h3>تلفن</h3>
+                        <p>۰۲۱-۱۲۳۴۵۶۷۸</p>
+                        <p>۰۹۱۲۳۴۵۶۷۸۹</p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <div>
+                        <h3>ایمیل</h3>
+                        <p>info@modshop.ir</p>
+                        <p>support@modshop.ir</p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h3>ساعات کاری</h3>
+                        <p>شنبه تا چهارشنبه: ۹ صبح تا ۶ عصر</p>
+                        <p>پنجشنبه: ۹ صبح تا ۲ بعدازظهر</p>
+                    </div>
+                </div>
+                
+                <div class="contact-social">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            
+            <!-- فرم تماس -->
+            <div class="contact-form">
+                <h2>فرم تماس با ما</h2>
+                <p class="form-description">سوالات، پیشنهادات و انتقادات خود را با ما در میان بگذارید</p>
+                
+                <form method="post" action="{% url 'root:contact' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" id="name" name="name" class="form-control" placeholder="نام کامل" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="email" id="email" name="email" class="form-control" placeholder="آدرس ایمیل" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="tel" id="phone" name="phone" class="form-control" placeholder="شماره تماس" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="text" id="subject" name="subject" class="form-control" placeholder="موضوع" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <textarea id="message" name="message" class="form-control" placeholder="پیام شما" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">ارسال پیام</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نقشه -->
+    <div class="contact-map">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3239.676572431128!2d51.38991431527022!3d35.71525398018495!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzXCsDQyJzU0LjkiTiA1McKwMjMnMjkuOSJF!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+</div>
+
+<style>
+    /* استایل‌های پایه */
+    :root {
+        --primary: #ff4757;
+        --primary-dark: #ff0000;
+        --secondary: #5352ed;
+        --dark: #2f3542;
+        --light: #f1f2f6;
+        --gray: #dfe4ea;
+        --gray-dark: #a4b0be;
+        --white: #ffffff;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    .contact-page {
+        padding: 100px 0 0;
+        background: var(--light);
+        font-family: 'Vazir', 'Segoe UI', sans-serif;
+        color: var(--dark);
+    }
+
+    /* بخش اطلاعات تماس */
+    .contact-info-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .contact-title {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 50px;
+        color: var(--primary);
+        position: relative;
+    }
+
+    .contact-title::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 3px;
+        background: var(--primary);
+    }
+
+    .contact-messages {
+        max-width: 800px;
+        margin: 0 auto 30px;
+    }
+
+    .alert {
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        margin-bottom: 60px;
+    }
+
+    /* اطلاعات تماس */
+    .contact-details {
+        background: var(--white);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+    }
+
+    .contact-details h2 {
+        font-size: 1.8rem;
+        margin-bottom: 30px;
+        color: var(--primary);
+        position: relative;
+        padding-bottom: 10px;
+    }
+
+    .contact-details h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 50px;
+        height: 2px;
+        background: var(--primary);
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 25px;
+    }
+
+    .contact-item i {
+        width: 40px;
+        height: 40px;
+        background: var(--primary);
+        color: var(--white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 15px;
+        font-size: 1.1rem;
+    }
+
+    .contact-item h3 {
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+        color: var(--dark);
+    }
+
+    .contact-item p {
+        color: var(--gray-dark);
+        line-height: 1.6;
+    }
+
+    .contact-social {
+        display: flex;
+        margin-top: 40px;
+    }
+
+    .contact-social a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+        background: var(--light);
+        border-radius: 50%;
+        margin-left: 15px;
+        color: var(--dark);
+        font-size: 1.2rem;
+        transition: var(--transition);
+    }
+
+    .contact-social a:hover {
+        background: var(--primary);
+        color: var(--white);
+        transform: translateY(-3px);
+    }
+
+    /* فرم تماس */
+    .contact-form {
+        background: var(--white);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+    }
+
+    .contact-form h2 {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+        color: var(--primary);
+    }
+
+    .form-description {
+        color: var(--gray-dark);
+        margin-bottom: 25px;
+        line-height: 1.6;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid var(--gray);
+        border-radius: 5px;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.2);
+    }
+
+    textarea.form-control {
+        min-height: 150px;
+        resize: vertical;
+    }
+
+    .submit-btn {
+        background: var(--primary);
+        color: var(--white);
+        border: none;
+        padding: 12px 30px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: var(--transition);
+        width: 100%;
+    }
+
+    .submit-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    /* نقشه */
+    .contact-map {
+        height: 400px;
+        width: 100%;
+    }
+
+    .contact-map iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    /* ریسپانسیو */
+    @media (max-width: 992px) {
+        .contact-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        
+        .contact-title {
+            font-size: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .contact-page {
+            padding-top: 80px;
+        }
+        
+        .contact-title {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+        }
+        
+        .contact-details,
+        .contact-form {
+            padding: 25px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .contact-item {
+            flex-direction: column;
+        }
+        
+        .contact-item i {
+            margin-left: 0;
+            margin-bottom: 10px;
+        }
+        
+        .contact-social {
+            justify-content: center;
+        }
+        
+        .contact-social a {
+            margin: 0 8px;
+        }
+    }
+</style>
+
+<script>
+    // اسکریپت برای تعاملات
+    document.addEventListener('DOMContentLoaded', function() {
+        // انیمیشن برای فرم
+        const formControls = document.querySelectorAll('.form-control');
+        
+        formControls.forEach(control => {
+            // افزودن placeholder شناور
+            control.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            control.addEventListener('blur', function() {
+                if (!this.value) {
+                    this.parentElement.classList.remove('focused');
+                }
+            });
+            
+            // بررسی مقدار اولیه
+            if (control.value) {
+                control.parentElement.classList.add('focused');
+            }
+        });
+        
+        // اعتبارسنجی فرم
+        const contactForm = document.querySelector('.contact-form form');
+        
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                let isValid = true;
+                
+                formControls.forEach(control => {
+                    if (!control.value.trim()) {
+                        control.style.borderColor = 'var(--primary)';
+                        isValid = false;
+                    } else {
+                        control.style.borderColor = 'var(--gray)';
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('لطفا تمام فیلدهای ضروری را پر کنید.');
+                }
+            });
+        }
+    });
+</script>
+{% endblock content %}

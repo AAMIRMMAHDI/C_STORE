@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}لیست علاقه‌مندی‌ها | استایل شاپ{% endblock title %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #ff6b6b;
+        --primary-light: #ff8e8e;
+        --secondary: #794afa;
+        --dark: #1e1e1e;
+        --dark-light: #333;
+        --light: #f8f9fa;
+        --gray: #e0e0e0;
+        --gray-dark: #b0b0b0;
+        --success: #2ecc71;
+        --danger: #e74c3c;
+        --warning: #f39c12;
+        --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+        --transition: all 0.3s ease;
+        --border-radius: 8px;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        direction: rtl;
+    }
+    
+    .favorites-section {
+        margin: 40px 0 60px;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+        margin-bottom: 30px;
+        color: var(--dark);
+        font-weight: 700;
+        position: relative;
+        padding-bottom: 15px;
+    }
+    
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 60px;
+        height: 3px;
+        background: var(--primary);
+    }
+    
+    .favorites-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
+    }
+    
+    .favorite-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transition: var(--transition);
+        position: relative;
+    }
+    
+    .favorite-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
+    
+    .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .product-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: var(--primary);
+        color: white;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .product-content {
+        padding: 20px;
+    }
+    
+    .product-title {
+        font-size: 1.1rem;
+        color: var(--dark);
+        margin-bottom: 10px;
+        font-weight: 600;
+        height: 50px;
+        overflow: hidden;
+    }
+    
+    .product-price {
+        font-size: 1.2rem;
+        color: var(--primary);
+        font-weight: 700;
+        margin: 10px 0;
+    }
+    
+    .product-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+        font-size: 0.9rem;
+        color: var(--dark-light);
+    }
+    
+    .product-stock {
+        color: var(--success);
+        font-weight: 600;
+    }
+    
+    .product-stock.out {
+        color: var(--danger);
+    }
+    
+    .product-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        border-top: 1px solid var(--gray);
+        padding-top: 15px;
+    }
+    
+    .btn {
+        padding: 8px 15px;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn i {
+        margin-left: 5px;
+    }
+    
+    .btn-primary {
+        background: var(--primary);
+        color: white;
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background: var(--primary-light);
+        transform: translateY(-2px);
+    }
+    
+    .btn-outline {
+        background: transparent;
+        border: 1px solid var(--gray-dark);
+        color: var(--dark);
+    }
+    
+    .btn-outline:hover {
+        background: var(--gray);
+    }
+    
+    .btn-danger {
+        background: var(--danger);
+        color: white;
+        border: none;
+    }
+    
+    .btn-danger:hover {
+        background: #c0392b;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        grid-column: 1 / -1;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--gray-dark);
+        margin-bottom: 20px;
+    }
+    
+    .empty-state h3 {
+        font-size: 1.3rem;
+        color: var(--dark);
+        margin-bottom: 10px;
+    }
+    
+    .empty-state p {
+        color: var(--dark-light);
+        margin-bottom: 20px;
+    }
+    
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: 30px;
+        transition: var(--transition);
+    }
+    
+    .back-btn:hover {
+        color: var(--primary-light);
+        transform: translateX(-5px);
+    }
+    
+    .back-btn i {
+        margin-right: 5px;
+    }
+    
+    .rating {
+        color: var(--warning);
+        margin: 5px 0;
+    }
+    
+    @media (max-width: 768px) {
+        .favorites-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .section-title {
+            font-size: 1.4rem;
+        }
+        
+        .product-actions {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container">
+    <section class="favorites-section">
+        <h2 class="section-title">لیست علاقه‌مندی‌ها</h2>
+        
+        {% if favorites %}
+        <div class="favorites-grid">
+            {% for favorite in favorites %}
+            <div class="favorite-card">
+                {% if favorite.product.discount %}
+                <span class="product-badge">{{ favorite.product.discount }}% تخفیف</span>
+                {% endif %}
+                
+                <img src="{{ favorite.product.image.url|default:'/static/images/default.jpg' }}" 
+                     alt="{{ favorite.product.name }}" 
+                     class="product-image">
+                
+                <div class="product-content">
+                    <h3 class="product-title">{{ favorite.product.name }}</h3>
+                    
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <span>({{ favorite.product.rating }})</span>
+                    </div>
+                    
+                    <div class="product-price">
+                        {% if favorite.product.discount %}
+                        <del>{{ favorite.product.original_price|intcomma }}</del>
+                        {% endif %}
+                        {{ favorite.product.price|intcomma }} تومان
+                    </div>
+                    
+                    <div class="product-meta">
+                        <span class="product-stock {% if not favorite.product.available %}out{% endif %}">
+                            {% if favorite.product.available %}
+                            موجود در انبار
+                            {% else %}
+                            ناموجود
+                            {% endif %}
+                        </span>
+                        <span>فروش: {{ favorite.product.sell_count }}</span>
+                    </div>
+                    
+                    <div class="product-actions">
+                        <form method="post" style="display: contents;">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ favorite.product.id }}">
+                            <input type="hidden" name="action" value="remove">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </form>
+                        
+                        <a href="{{ favorite.product.get_absolute_url }}" class="btn btn-outline">
+                            <i class="fas fa-eye"></i> مشاهده
+                        </a>
+                        
+                        {% if favorite.product.available %}
+                        <form method="post" action="{% url 'cart:add_to_cart' %}" style="display: contents;">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ favorite.product.id }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-shopping-cart"></i> خرید
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="far fa-heart"></i>
+            <h3>لیست علاقه‌مندی‌های شما خالی است</h3>
+            <p>محصولات مورد علاقه خود را به این لیست اضافه کنید تا بعداً ببینید.</p>
+            <a href="{% url 'products:product_list' %}" class="btn btn-primary">
+                <i class="fas fa-shopping-bag"></i> مشاهده محصولات
+            </a>
+        </div>
+        {% endif %}
+        
+        <a href="{% url 'account:dashboard' %}" class="back-btn">
+            <i class="fas fa-arrow-right"></i> بازگشت به داشبورد
+        </a>
+    </section>
+</div>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<script>
+    // Add to cart animation
+    document.querySelectorAll('.btn-primary').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            if (this.closest('form').action.includes('add_to_cart')) {
+                this.innerHTML = '<i class="fas fa-check"></i> افزوده شد';
+                this.style.background = 'var(--success)';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-shopping-cart"></i> خرید';
+                    this.style.background = 'var(--primary)';
+                }, 2000);
+            }
+        });
+    });
+</script>
+{% endblock content %}

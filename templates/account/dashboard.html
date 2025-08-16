@@ -1,0 +1,797 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}داشبورد کاربری | استایل شاپ{% endblock title %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+  --primary: #ff6b6b;
+  --secondary: #794afa;
+  --dark: #1e1e1e;
+  --light: #f8f9fa;
+  --gray: #e0e0e0;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s ease;
+  --border-radius: 8px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Vazir', sans-serif;
+}
+
+body {
+  background-color: #f5f5f5;
+  direction: rtl;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Tab Styles */
+.profile-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  border-bottom: 1px solid var(--gray);
+  margin-bottom: 30px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: var(--shadow);
+}
+
+.profile-tab {
+  padding: 12px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--dark);
+  transition: var(--transition);
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-tab:hover {
+  color: var(--primary);
+}
+
+.profile-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.profile-tab i {
+  font-size: 1.1rem;
+}
+
+/* Dashboard Layout */
+.dashboard {
+  margin: 25px 0;
+}
+
+/* Main Content */
+.content {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 25px;
+}
+
+.content-section {
+  display: none;
+}
+
+.content-section.active-content {
+  display: block;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 25px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--primary);
+}
+
+/* Stats Grid, Orders Table, etc. (unchanged) */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: white;
+  padding: 20px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: var(--transition);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.stat-card i {
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: 15px;
+}
+
+.stat-card .value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.stat-card .label {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Orders Table (unchanged) */
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.orders-table th, 
+.orders-table td {
+  padding: 12px 15px;
+  text-align: right;
+  border-bottom: 1px solid var(--gray);
+}
+
+.orders-table th {
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+}
+
+.orders-table tr:last-child td {
+  border-bottom: none;
+}
+
+.orders-table .status {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.orders-table .status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.orders-table .status.completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.orders-table .status.canceled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.orders-table .action-link {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.orders-table .action-link:hover {
+  text-decoration: underline;
+}
+
+/* Orders Mobile View (unchanged) */
+.orders-mobile {
+  display: none;
+}
+
+.order-card {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.order-card .order-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.order-card .order-id {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.order-card .order-date {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.order-card .order-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.order-card .order-price {
+  font-weight: 700;
+}
+
+.order-card .order-status {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.order-card .view-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Password Form (unchanged) */
+.password-form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.form-group .input-wrapper {
+  position: relative;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid var(--gray);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.form-group input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+  outline: none;
+}
+
+.form-group .toggle-password {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #777;
+}
+
+.form-error {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 5px;
+}
+
+.submit-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  width: 100%;
+}
+
+.submit-btn:hover {
+  background: #e05555;
+}
+
+/* Modal (unchanged) */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 25px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.modal-message {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+}
+
+.modal-btn.confirm {
+  background: var(--primary);
+  color: white;
+}
+
+.modal-btn.confirm:hover {
+  background: #e05555;
+}
+
+.modal-btn.cancel {
+  background: var(--gray);
+  color: var(--dark);
+}
+
+.modal-btn.cancel:hover {
+  background: #d0d0d0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 5px;
+  }
+  
+  .profile-tab {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+  
+  .orders-table {
+    display: none;
+  }
+  
+  .orders-mobile {
+    display: block;
+  }
+}
+
+@media (max-width: 576px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .section-title {
+    font-size: 1.3rem;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+}
+</style>
+
+<div class="container">
+  <div class="dashboard">
+    <!-- Tabs -->
+    <div class="profile-tabs">
+      <div class="profile-tab active" data-section="dashboard-content">
+        <i class="fas fa-tachometer-alt"></i> داشبورد
+      </div>
+      <div class="profile-tab" data-section="orders-content">
+        <i class="fas fa-shopping-bag"></i> سفارشات من
+      </div>
+      <div class="profile-tab" data-section="address-content">
+        <i class="fas fa-map-marker-alt"></i> آدرس‌های من
+      </div>
+      <div class="profile-tab" data-section="favorites-content">
+        <i class="fas fa-heart"></i> لیست علاقه‌مندی‌ها
+      </div>
+      <div class="profile-tab" data-section="profile-content">
+        <i class="fas fa-user"></i> پروفایل کاربری
+      </div>
+      <div class="profile-tab" data-section="security-content">
+        <i class="fas fa-lock"></i> امنیت
+      </div>
+      <div class="profile-tab" id="logout-btn">
+        <i class="fas fa-sign-out-alt"></i> خروج از حساب
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="content">
+      <!-- Dashboard Content -->
+      <div class="content-section active-content" id="dashboard-content">
+        <h2 class="section-title">داشبورد کاربری</h2>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <i class="fas fa-shopping-bag"></i>
+            <div class="value">{{ orders|length }}</div>
+            <div class="label">سفارشات</div>
+          </div>
+          
+          <div class="stat-card">
+            <i class="fas fa-heart"></i>
+            <div class="value">{{ favorites_count }}</div>
+            <div class="label">علاقه‌مندی‌ها</div>
+          </div>
+          
+          <div class="stat-card">
+            <i class="fas fa-comment"></i>
+            <div class="value">{{ comments_count }}</div>
+            <div class="label">نظرات</div>
+          </div>
+          
+          <div class="stat-card">
+            <i class="fas fa-wallet"></i>
+            <div class="value">{{ credit|intcomma }} تومان</div>
+            <div class="label">اعتبار</div>
+          </div>
+        </div>
+        
+        <h3 class="section-title">سفارشات اخیر</h3>
+        
+        <!-- Desktop Table -->
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>شماره سفارش</th>
+              <th>تاریخ</th>
+              <th>مبلغ</th>
+              <th>وضعیت</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in orders %}
+            <tr>
+              <td>{{ order.order_number }}</td>
+              <td>{{ order.created_at|date:"Y/m/d" }}</td>
+              <td>{{ order.final_price|intcomma }} تومان</td>
+              <td>
+                <span class="status {{ order.status }}">
+                  {{ order.get_status_display }}
+                </span>
+              </td>
+              <td>
+                <a href="{% url 'cart:order_detail' order.order_number %}" class="action-link">
+                  مشاهده
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" style="text-align: center;">هیچ سفارشی ثبت نشده است</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        
+        <!-- Mobile Orders -->
+        <div class="orders-mobile">
+          {% for order in orders %}
+          <div class="order-card">
+            <div class="order-header">
+              <span class="order-id">سفارش #{{ order.order_number }}</span>
+              <span class="order-date">{{ order.created_at|date:"Y/m/d" }}</span>
+            </div>
+            
+            <div class="order-details">
+              <span class="order-price">{{ order.final_price|intcomma }} تومان</span>
+              <span class="order-status {{ order.status }}">
+                {{ order.get_status_display }}
+              </span>
+            </div>
+            
+            <a href="{% url 'cart:order_detail' order.order_number %}" class="view-link">
+              مشاهده جزئیات
+            </a>
+          </div>
+          {% empty %}
+          <div class="order-card" style="text-align: center;">
+            هیچ سفارشی ثبت نشده است
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      
+      <!-- Orders Content -->
+      <div class="content-section" id="orders-content">
+        <h2 class="section-title">سفارشات من</h2>
+        
+        <!-- Desktop Table -->
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>شماره سفارش</th>
+              <th>تاریخ</th>
+              <th>مبلغ</th>
+              <th>وضعیت</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in orders %}
+            <tr>
+              <td>{{ order.order_number }}</td>
+              <td>{{ order.created_at|date:"Y/m/d" }}</td>
+              <td>{{ order.final_price|intcomma }} تومان</td>
+              <td>
+                <span class="status {{ order.status }}">
+                  {{ order.get_status_display }}
+                </span>
+              </td>
+              <td>
+                <a href="{% url 'cart:order_detail' order.order_number %}" class="action-link">
+                  مشاهده
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" style="text-align: center;">هیچ سفارشی ثبت نشده است</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        
+        <!-- Mobile Orders -->
+        <div class="orders-mobile">
+          {% for order in orders %}
+          <div class="order-card">
+            <div class="order-header">
+              <span class="order-id">سفارش #{{ order.order_number }}</span>
+              <span class="order-date">{{ order.created_at|date:"Y/m/d" }}</span>
+            </div>
+            
+            <div class="order-details">
+              <span class="order-price">{{ order.final_price|intcomma }} تومان</span>
+              <span class="order-status {{ order.status }}">
+                {{ order.get_status_display }}
+              </span>
+            </div>
+            
+            <a href="{% url 'cart:order_detail' order.order_number %}" class="view-link">
+              مشاهده جزئیات
+            </a>
+          </div>
+          {% empty %}
+          <div class="order-card" style="text-align: center;">
+            هیچ سفارشی ثبت نشده است
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      
+      <!-- Address Content -->
+      <div class="content-section" id="address-content">
+        <h2 class="section-title">آدرس‌های من</h2>
+        
+        <div style="text-align: center; padding: 30px 0;">
+          <i class="fas fa-map-marker-alt" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+          <p style="margin-bottom: 20px;">در حال حاضر امکان مدیریت آدرس‌ها در این بخش در دسترس نیست</p>
+          <a href="{% url 'cart:address' %}" class="submit-btn" style="max-width: 250px; margin: 0 auto;">
+            مدیریت آدرس‌ها
+          </a>
+        </div>
+      </div>
+      
+      <!-- Favorites Content -->
+      <div class="content-section" id="favorites-content">
+        <h2 class="section-title">لیست علاقه‌مندی‌ها</h2>
+        
+        <div style="text-align: center; padding: 30px 0;">
+          <i class="fas fa-heart" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+          <p style="margin-bottom: 20px;">در حال حاضر امکان مدیریت علاقه‌مندی‌ها در این بخش در دسترس نیست</p>
+          <a href="{% url 'account:favorites' %}" class="submit-btn" style="max-width: 250px; margin: 0 auto;">
+            مشاهده علاقه‌مندی‌ها
+          </a>
+        </div>
+      </div>
+      
+      <!-- Profile Content -->
+      <div class="content-section" id="profile-content">
+        <h2 class="section-title">پروفایل کاربری</h2>
+        
+        <div style="text-align: center; padding: 30px 0;">
+          <i class="fas fa-user" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+          <p style="margin-bottom: 20px;">در حال حاضر امکان ویرایش پروفایل در این بخش در دسترس نیست</p>
+          <a href="{% url 'account:profile' %}" class="submit-btn" style="max-width: 250px; margin: 0 auto;">
+            ویرایش پروفایل
+          </a>
+        </div>
+      </div>
+      
+      <!-- Security Content -->
+      <div class="content-section" id="security-content">
+        <h2 class="section-title">تغییر رمز عبور</h2>
+        
+        <form class="password-form" method="post" action="{% url 'account:change_password' %}">
+          {% csrf_token %}
+          
+          {% if form.non_field_errors %}
+          <div style="color: #dc3545; margin-bottom: 20px; text-align: center;">
+            {{ form.non_field_errors.0 }}
+          </div>
+          {% endif %}
+          
+          <div class="form-group {% if form.old_password.errors %}has-error{% endif %}">
+            <label for="{{ form.old_password.id_for_label }}">رمز عبور فعلی</label>
+            <div class="input-wrapper">
+              {{ form.old_password }}
+              <span class="toggle-password" data-target="{{ form.old_password.id_for_label }}">
+                <i class="fas fa-eye"></i>
+              </span>
+            </div>
+            {% if form.old_password.errors %}
+            <span class="form-error">{{ form.old_password.errors.0 }}</span>
+            {% endif %}
+          </div>
+          
+          <div class="form-group {% if form.new_password1.errors %}has-error{% endif %}">
+            <label for="{{ form.new_password1.id_for_label }}">رمز عبور جدید</label>
+            <div class="input-wrapper">
+              {{ form.new_password1 }}
+              <span class="toggle-password" data-target="{{ form.new_password1.id_for_label }}">
+                <i class="fas fa-eye"></i>
+              </span>
+            </div>
+            {% if form.new_password1.errors %}
+            <span class="form-error">{{ form.new_password1.errors.0 }}</span>
+            {% endif %}
+          </div>
+          
+          <div class="form-group {% if form.new_password2.errors %}has-error{% endif %}">
+            <label for="{{ form.new_password2.id_for_label }}">تکرار رمز عبور جدید</label>
+            <div class="input-wrapper">
+              {{ form.new_password2 }}
+              <span class="toggle-password" data-target="{{ form.new_password2.id_for_label }}">
+                <i class="fas fa-eye"></i>
+              </span>
+            </div>
+            {% if form.new_password2.errors %}
+            <span class="form-error">{{ form.new_password2.errors.0 }}</span>
+            {% endif %}
+          </div>
+          
+          <button type="submit" class="submit-btn">تغییر رمز عبور</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Logout Modal -->
+<div class="modal-overlay" id="logout-modal">
+  <div class="modal-content">
+    <p class="modal-message">آیا مطمئن هستید که می‌خواهید از حساب کاربری خود خارج شوید؟</p>
+    
+    <div class="modal-actions">
+      <a href="{% url 'account:logout' %}" class="modal-btn confirm">بله، خارج شوم</a>
+      <button class="modal-btn cancel">انصراف</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Elements
+  const tabs = document.querySelectorAll('.profile-tab');
+  const contentSections = document.querySelectorAll('.content-section');
+  const logoutBtn = document.getElementById('logout-btn');
+  const logoutModal = document.getElementById('logout-modal');
+  const cancelBtn = document.querySelector('.modal-btn.cancel');
+  
+  // Switch between content sections
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Don't proceed if it's the logout button
+      if (this.id === 'logout-btn') return;
+      
+      // Remove active class from all tabs
+      tabs.forEach(t => t.classList.remove('active'));
+      
+      // Add active class to clicked tab
+      this.classList.add('active');
+      
+      // Hide all content sections
+      contentSections.forEach(section => {
+        section.classList.remove('active-content');
+      });
+      
+      // Show the selected content section
+      const sectionId = this.getAttribute('data-section');
+      document.getElementById(sectionId).classList.add('active-content');
+    });
+  });
+  
+  // Logout modal
+  logoutBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    logoutModal.style.display = 'flex';
+  });
+  
+  cancelBtn.addEventListener('click', function() {
+    logoutModal.style.display = 'none';
+  });
+  
+  // Close modal when clicking outside
+  window.addEventListener('click', function(e) {
+    if (e.target === logoutModal) {
+      logoutModal.style.display = 'none';
+    }
+  });
+  
+  // Toggle password visibility
+  document.querySelectorAll('.toggle-password').forEach(button => {
+    button.addEventListener('click', function() {
+      const targetId = this.getAttribute('data-target');
+      const input = document.getElementById(targetId);
+      const icon = this.querySelector('i');
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    });
+  });
+});
+</script>
+{% endblock content %}

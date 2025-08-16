@@ -1,0 +1,44 @@
+body {
+    font-family: Arial, sans-serif;
+    direction: rtl;
+    text-align: right;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+header, footer {
+    background: #f8f8f8;
+    padding: 20px;
+}
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+nav ul li {
+    display: inline;
+    margin-left: 20px;
+}
+.product-list, .collection-list {
+    display: flex;
+    gap: 20px;
+}
+.product, .collection {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+.product img, .collection img {
+    max-width: 100%;
+}
+.price {
+    color: green;
+}
+.old-price {
+    text-decoration: line-through;
+    color: red;
+}
+.discount {
+    color: orange;
+}

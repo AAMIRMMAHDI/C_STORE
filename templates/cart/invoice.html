@@ -1,0 +1,443 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}فاکتور سفارش {{ order.order_number }} | استایل شاپ{% endblock title %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --primary: #ff6b6b;
+        --secondary: #794afa;
+        --dark: #1e1e1e;
+        --light: #f8f9fa;
+        --gray: #e0e0e0;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
+        --border-radius: 8px;
+        --font-family: 'Vazir', 'Segoe UI', sans-serif;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 8px;
+        direction: rtl;
+    }
+
+    .invoice-section {
+        margin: 16px 0;
+        background: white;
+        padding: 8px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+    }
+
+    .invoice-section h1 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 12px;
+        position: relative;
+        padding-bottom: 6px;
+    }
+
+    .invoice-section h1:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 36px;
+        height: 3px;
+        background: var(--primary);
+    }
+
+    .invoice-header p {
+        font-size: 0.75rem;
+        color: #555;
+        margin-bottom: 6px;
+    }
+
+    .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        background: white;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+
+    .invoice-table th, .invoice-table td {
+        padding: 6px;
+        text-align: right;
+        font-size: 0.75rem;
+        color: var(--dark);
+        border-bottom: 1px solid var(--gray);
+    }
+
+    .invoice-table th {
+        background: var(--primary);
+        color: white;
+        font-weight: 600;
+    }
+
+    .invoice-table td {
+        background: var(--light);
+    }
+
+    .invoice-table tr:nth-child(even) td {
+        background: white;
+    }
+
+    .product-link {
+        color: var(--dark);
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .product-link:hover {
+        color: var(--primary);
+        text-decoration: underline;
+    }
+
+    .invoice-details {
+        background: white;
+        padding: 8px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 12px;
+    }
+
+    .accordion-header {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--dark);
+        padding: 8px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--transition);
+    }
+
+    .accordion-header:hover {
+        background: var(--gray);
+    }
+
+    .accordion-header .fa-chevron-down {
+        transition: transform 0.3s ease;
+    }
+
+    .accordion-header.active .fa-chevron-down {
+        transform: rotate(180deg);
+    }
+
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .accordion-content.active {
+        max-height: 500px; /* Adjust based on content */
+    }
+
+    .invoice-details p {
+        font-size: 0.75rem;
+        color: #555;
+        margin-bottom: 6px;
+    }
+
+    .invoice-details p strong {
+        color: var(--dark);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 6px;
+        margin-top: 12px;
+        flex-direction: column;
+    }
+
+    .print-btn, .back-btn {
+        padding: 8px;
+        border-radius: var(--border-radius);
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .print-btn {
+        background: var(--primary);
+        color: white;
+    }
+
+    .print-btn:hover {
+        background: #e05555;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    .back-btn {
+        background: var(--light);
+        color: var(--dark);
+        border: 1px solid var(--gray);
+    }
+
+    .back-btn:hover {
+        background: var(--gray);
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 576px) {
+        .container {
+            padding: 0 6px;
+        }
+
+        .invoice-section h1 {
+            font-size: 1.2rem;
+        }
+
+        .invoice-header p {
+            font-size: 0.7rem;
+        }
+
+        .invoice-table {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .invoice-table th, .invoice-table td {
+            padding: 4px;
+            font-size: 0.7rem;
+            min-width: 80px;
+        }
+
+        .accordion-header {
+            font-size: 0.8rem;
+            padding: 6px;
+        }
+
+        .invoice-details p {
+            font-size: 0.7rem;
+        }
+
+        .print-btn, .back-btn {
+            font-size: 0.75rem;
+            padding: 6px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .invoice-section {
+            padding: 12px;
+        }
+
+        .invoice-section h1 {
+            font-size: 1.5rem;
+        }
+
+        .invoice-header p {
+            font-size: 0.8rem;
+        }
+
+        .invoice-table th, .invoice-table td {
+            padding: 8px;
+            font-size: 0.8rem;
+        }
+
+        .accordion-header {
+            font-size: 0.9rem;
+            padding: 10px;
+        }
+
+        .invoice-details p {
+            font-size: 0.8rem;
+        }
+
+        .print-btn, .back-btn {
+            font-size: 0.85rem;
+            padding: 10px;
+        }
+
+        .action-buttons {
+            flex-direction: row;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .container {
+            padding: 0 12px;
+        }
+
+        .invoice-section {
+            padding: 16px;
+        }
+
+        .invoice-section h1 {
+            font-size: 1.6rem;
+        }
+
+        .invoice-header p {
+            font-size: 0.85rem;
+        }
+
+        .invoice-table th, .invoice-table td {
+            padding: 10px;
+            font-size: 0.85rem;
+        }
+
+        .accordion-header {
+            font-size: 1rem;
+            padding: 12px;
+        }
+
+        .invoice-details p {
+            font-size: 0.85rem;
+        }
+
+        .print-btn, .back-btn {
+            font-size: 0.9rem;
+            padding: 12px;
+        }
+    }
+
+    /* Print Styles */
+    @media print {
+        body {
+            margin: 1cm;
+            font-size: 12pt;
+            color: #000;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        .invoice-section {
+            box-shadow: none;
+            border: 1px solid #000;
+        }
+
+        .invoice-table th, .invoice-table td {
+            border: 1px solid #000;
+            padding: 8pt;
+            font-size: 10pt;
+            background: none;
+        }
+
+        .invoice-table th {
+            background: #ccc;
+            color: #000;
+        }
+
+        .invoice-section h1:after {
+            display: none;
+        }
+
+        .action-buttons, .accordion-header .fa-chevron-down {
+            display: none;
+        }
+
+        .accordion-content {
+            max-height: none !important;
+        }
+
+        .product-link:hover {
+            text-decoration: none;
+            color: #000;
+        }
+
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+    }
+</style>
+
+<div class="container">
+    <section class="invoice-section">
+        <div class="invoice-header">
+            <h1>فاکتور سفارش {{ order.order_number }}</h1>
+            <p>تاریخ سفارش: {{ order.created_at|date:"Y/m/d - H:i" }}</p>
+            <p>وضعیت: {{ order.get_status_display }}</p>
+        </div>
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>محصول</th>
+                    <th>رنگ</th>
+                    <th>سایز</th>
+                    <th>تعداد</th>
+                    <th>قیمت واحد</th>
+                    <th>تخفیف</th>
+                    <th>مبلغ کل</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order_items %}
+                    <tr>
+                        <td><a href="{% url 'products:product_detail' item.product.id %}" class="product-link">{{ item.product.name|default:"محصول بدون نام" }}</a></td>
+                        <td>{{ item.color.name|default:"-" }}</td>
+                        <td>{{ item.size.name|default:"-" }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.unit_price|intcomma }} تومان</td>
+                        <td>{{ item.discount|intcomma|default:"0" }} تومان</td>
+                        <td>{{ item.get_total_price|intcomma }} تومان</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="invoice-details">
+            <div class="accordion-header active" data-target="details-content">
+                <span>جزئیات سفارش</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="accordion-content active" id="details-content">
+                <p>جمع کل محصولات: {{ order.total_price|intcomma }} تومان</p>
+                <p>تخفیف: {{ order.total_discount|intcomma }} تومان</p>
+                <p>هزینه ارسال: {{ order.shipping_cost|intcomma|default:"رایگان" }}</p>
+                <p><strong>مبلغ قابل پرداخت: {{ order.final_price|intcomma }} تومان</strong></p>
+                <p><strong>تحویل گیرنده:</strong> {{ order.address.full_name }}</p>
+                <p><strong>آدرس:</strong> {{ order.address.province }}، {{ order.address.city }}، {{ order.address.address }}</p>
+                <p><strong>کد پستی:</strong> {{ order.address.postal_code }}</p>
+                <p><strong>تلفن:</strong> {{ order.address.phone_number }}</p>
+            </div>
+        </div>
+        <div class="action-buttons">
+            <button class="print-btn" onclick="window.print()">چاپ فاکتور</button>
+            <a href="{% url 'cart:orders' %}" class="back-btn">بازگشت به سفارشات</a>
+        </div>
+    </section>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', (e) => {
+                if (!e.target.closest('.product-link')) {
+                    const target = document.getElementById(header.dataset.target);
+                    header.classList.toggle('active');
+                    target.classList.toggle('active');
+                }
+            });
+        });
+
+        // Collapse accordion on mobile by default
+        if (window.innerWidth <= 576) {
+            accordionHeaders.forEach(header => {
+                header.classList.remove('active');
+                document.getElementById(header.dataset.target).classList.remove('active');
+            });
+        }
+    });
+</script>
+{% endblock content %}

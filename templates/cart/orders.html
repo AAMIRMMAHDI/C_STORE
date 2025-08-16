@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}سفارشات من | استایل شاپ{% endblock title %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --primary: #ff6b6b;
+        --secondary: #794afa;
+        --dark: #1e1e1e;
+        --light: #f8f9fa;
+        --gray: #e0e0e0;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
+        --border-radius: 8px;
+        --font-family: 'Vazir', 'Segoe UI', sans-serif;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 8px;
+        direction: rtl;
+    }
+
+    .orders-section {
+        margin: 16px 0;
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        position: relative;
+        padding-bottom: 6px;
+        color: var(--dark);
+    }
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 36px;
+        height: 3px;
+        background: var(--primary);
+    }
+
+    .filters {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 12px;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 8px;
+    }
+
+    .filters a {
+        padding: 8px 16px;
+        background: var(--gray);
+        color: var(--dark);
+        text-decoration: none;
+        border-radius: var(--border-radius);
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .filters a.active, .filters a:hover {
+        background: var(--primary);
+        color: white;
+    }
+
+    .order-card {
+        background: white;
+        padding: 8px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 12px;
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        cursor: pointer;
+    }
+
+    .order-header-info {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .order-status {
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: var(--border-radius);
+    }
+
+    .order-status.pending { background: rgba(255, 165, 0, 0.1); color: #ffa500; }
+    .order-status.shipped { background: rgba(0, 123, 255, 0.1); color: #007bff; }
+    .order-status.delivered { background: rgba(40, 167, 69, 0.1); color: #28a745; }
+    .order-status.canceled { background: rgba(231, 76, 60, 0.1); color: #e74c3c; }
+
+    .order-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .order-content.active {
+        max-height: 500px; /* Adjust based on content */
+    }
+
+    .order-products {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+    }
+
+    .order-products img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        border-radius: var(--border-radius);
+        background: var(--light);
+    }
+
+    .order-products .more-items {
+        font-size: 0.75rem;
+        color: #555;
+        align-self: center;
+    }
+
+    .order-total {
+        font-size: 0.8rem;
+        color: var(--dark);
+        margin-bottom: 8px;
+    }
+
+    .order-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .action-btn {
+        padding: 8px;
+        background: var(--primary);
+        color: white;
+        text-decoration: none;
+        border-radius: var(--border-radius);
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+        transition: var(--transition);
+    }
+
+    .action-btn:hover {
+        background: #e05555;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    .cancel-btn {
+        background: #e74c3c;
+    }
+
+    .cancel-btn:hover {
+        background: #c0392b;
+        box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+    }
+
+    .accordion-icon {
+        transition: transform 0.3s ease;
+    }
+
+    .order-header.active .accordion-icon {
+        transform: rotate(180deg);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 576px) {
+        .container {
+            padding: 0 6px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+        }
+
+        .filters {
+            gap: 4px;
+        }
+
+        .filters a {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+        }
+
+        .order-card {
+            padding: 6px;
+            margin-bottom: 8px;
+        }
+
+        .order-header-info {
+            font-size: 0.8rem;
+        }
+
+        .order-status {
+            font-size: 0.75rem;
+            padding: 3px 6px;
+        }
+
+        .order-products img {
+            width: 70px;
+            height: 70px;
+        }
+
+        .order-products .more-items {
+            font-size: 0.7rem;
+        }
+
+        .order-total {
+            font-size: 0.75rem;
+        }
+
+        .action-btn {
+            font-size: 0.75rem;
+            padding: 6px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .order-card {
+            padding: 12px;
+        }
+
+        .order-header-info {
+            font-size: 0.9rem;
+        }
+
+        .order-status {
+            font-size: 0.85rem;
+        }
+
+        .order-products img {
+            width: 90px;
+            height: 90px;
+        }
+
+        .order-products .more-items {
+            font-size: 0.8rem;
+        }
+
+        .order-total {
+            font-size: 0.85rem;
+        }
+
+        .action-btn {
+            font-size: 0.85rem;
+            padding: 10px;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .container {
+            padding: 0 12px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+        }
+
+        .filters {
+            gap: 8px;
+        }
+
+        .filters a {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        .order-card {
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .order-header-info {
+            font-size: 1rem;
+        }
+
+        .order-status {
+            font-size: 0.9rem;
+            padding: 4px 10px;
+        }
+
+        .order-products img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .order-products .more-items {
+            font-size: 0.85rem;
+        }
+
+        .order-total {
+            font-size: 0.9rem;
+        }
+
+        .action-btn {
+            font-size: 0.9rem;
+            padding: 12px;
+        }
+
+        .order-actions {
+            flex-direction: row;
+            gap: 8px;
+        }
+    }
+</style>
+
+<div class="container">
+    <section class="orders-section">
+        <h2 class="section-title">سفارشات من</h2>
+        <div class="filters">
+            <a href="{% url 'cart:orders' %}" {% if not current_status %}class="active"{% endif %}>همه سفارشات</a>
+            <a href="{% url 'cart:orders' %}?status=PENDING" {% if current_status == 'PENDING' %}class="active"{% endif %}>در حال پردازش</a>
+            <a href="{% url 'cart:orders' %}?status=SHIPPED" {% if current_status == 'SHIPPED' %}class="active"{% endif %}>ارسال شده</a>
+            <a href="{% url 'cart:orders' %}?status=DELIVERED" {% if current_status == 'DELIVERED' %}class="active"{% endif %}>تحویل شده</a>
+            <a href="{% url 'cart:orders' %}?status=CANCELED" {% if current_status == 'CANCELED' %}class="active"{% endif %}>لغو شده</a>
+        </div>
+        {% for order in orders %}
+            <div class="order-card">
+                <div class="order-header {% if order.orderitems.count > 0 %}accordion{% endif %}" data-order-id="{{ order.order_number }}">
+                    <div class="order-header-info">
+                        <strong>شماره سفارش: {{ order.order_number }}</strong> - {{ order.created_at|date:"Y/m/d" }}
+                    </div>
+                    <div class="order-status {{ order.status|lower }}">{{ order.get_status_display }}</div>
+                    {% if order.orderitems.count > 0 %}
+                        <i class="fas fa-chevron-down accordion-icon"></i>
+                    {% endif %}
+                </div>
+                <div class="order-content">
+                    <div class="order-products">
+                        {% for item in order.orderitems.all|slice:":2" %}
+                            {% for image in item.product.images.all %}
+                                {% if image.is_main %}
+                                    <img src="{{ image.image.url|default:'/static/images/default.jpg' }}" alt="{{ item.product.name|default:'محصول بدون نام' }}">
+                                {% endif %}
+                            {% empty %}
+                                <img src="{% static 'images/default.jpg' %}" alt="محصول بدون تصویر">
+                            {% endfor %}
+                        {% endfor %}
+                        {% if order.orderitems.count > 2 %}
+                            <span class="more-items">+{{ order.orderitems.count|add:"-2" }} محصول دیگر</span>
+                        {% endif %}
+                    </div>
+                    <div class="order-total">مبلغ کل: {{ order.final_price|intcomma }} تومان</div>
+                    <div class="order-actions">
+                        <a href="{% url 'cart:order_detail' order.order_number %}" class="action-btn">مشاهده جزئیات</a>
+                        {% if order.status in 'PENDING,SHIPPED' %}
+                            <a href="{% url 'cart:cancel_order' order.order_number %}" class="action-btn cancel-btn">لغو سفارش</a>
+                        {% endif %}
+                        <a href="{% url 'cart:reorder' order.order_number %}" class="action-btn">سفارش مجدد</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p style="text-align: center; color: var(--dark); font-size: 0.85rem; padding: 16px 0;">هیچ سفارشی ثبت نشده است.</p>
+        {% endfor %}
+    </section>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const accordions = document.querySelectorAll('.order-header.accordion');
+
+        accordions.forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                const isActive = header.classList.contains('active');
+                header.classList.toggle('active');
+                content.classList.toggle('active');
+            });
+        });
+
+        // Collapse accordions on mobile by default
+        if (window.innerWidth <= 576) {
+            accordions.forEach(header => {
+                header.classList.remove('active');
+                header.nextElementSibling.classList.remove('active');
+            });
+        }
+    });
+</script>
+{% endblock content %}

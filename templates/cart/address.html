@@ -1,0 +1,644 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}استایل شاپ | ثبت آدرس{% endblock title %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --primary: #ff6b6b;
+        --secondary: #794afa;
+        --dark: #1e1e1e;
+        --light: #f8f9fa;
+        --gray: #e0e0e0;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
+        --border-radius: 8px;
+        --font-family: 'Vazir', 'Segoe UI', sans-serif;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 6px;
+        direction: rtl;
+    }
+
+    .address-section {
+        margin: 16px 0 32px;
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        position: relative;
+        padding-bottom: 6px;
+        color: var(--dark);
+    }
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 36px;
+        height: 3px;
+        background: var(--primary);
+    }
+
+    .steps {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 12px;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .step {
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+        font-size: 0.75rem;
+        color: #666;
+        transition: var(--transition);
+    }
+
+    .step.active {
+        color: var(--primary);
+    }
+
+    .step-number {
+        width: 16px;
+        height: 16px;
+        background: var(--gray);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .step.active .step-number {
+        background: var(--primary);
+        color: white;
+    }
+
+    .accordion-header {
+        background: var(--light);
+        padding: 12px;
+        border-radius: var(--border-radius);
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--dark);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--transition);
+        margin-bottom: 8px;
+    }
+
+    .accordion-header:hover {
+        background: var(--gray);
+    }
+
+    .accordion-header .fa-chevron-down {
+        transition: transform 0.3s ease;
+    }
+
+    .accordion-header.active .fa-chevron-down {
+        transform: rotate(180deg);
+    }
+
+    .addresses-content, .new-address-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .addresses-content.active, .new-address-content.active {
+        max-height: 1000px; /* Adjust based on content */
+    }
+
+    .addresses {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .address-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 8px;
+        position: relative;
+        transition: var(--transition);
+        border: 2px solid transparent;
+    }
+
+    .address-card.selected {
+        border-color: var(--primary);
+        background: rgba(255, 107, 107, 0.05);
+    }
+
+    .address-radio {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .address-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: var(--dark);
+        padding-left: 28px;
+    }
+
+    .address-info {
+        color: #555;
+        font-size: 0.65rem;
+        line-height: 1.5;
+    }
+
+    .address-info p {
+        margin-bottom: 4px;
+    }
+
+    .new-address-form {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 8px;
+    }
+
+    .form-group {
+        margin-bottom: 8px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 3px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        color: var(--dark);
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 6px;
+        border: 1px solid var(--gray);
+        border-radius: var(--border-radius);
+        font-size: 0.75rem;
+        height: 32px;
+        font-family: var(--font-family);
+        transition: var(--transition);
+    }
+
+    .form-group textarea {
+        height: 64px;
+        resize: vertical;
+    }
+
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        border-color: var(--primary);
+        outline: none;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .submit-btn, .back-btn {
+        flex: 1;
+        padding: 8px;
+        border: none;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .submit-btn {
+        background: var(--primary);
+        color: white;
+    }
+
+    .submit-btn:hover {
+        background: #e05555;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    .back-btn {
+        background: var(--light);
+        color: var(--dark);
+        border: 1px solid var(--gray);
+    }
+
+    .back-btn:hover {
+        background: var(--gray);
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .addresses {
+            grid-template-columns: 1fr;
+        }
+
+        .address-card {
+            padding: 8px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding: 0 6px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+        }
+
+        .steps {
+            justify-content: flex-start;
+            gap: 6px;
+        }
+
+        .step {
+            font-size: 0.7rem;
+        }
+
+        .step-number {
+            width: 16px;
+            height: 16px;
+            font-size: 0.65rem;
+        }
+
+        .accordion-header {
+            font-size: 0.85rem;
+            padding: 10px;
+        }
+
+        .address-title {
+            font-size: 0.8rem;
+        }
+
+        .address-info {
+            font-size: 0.6rem;
+        }
+
+        .address-radio {
+            width: 18px;
+            height: 18px;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            font-size: 0.7rem;
+            height: 30px;
+        }
+
+        .form-group textarea {
+            height: 60px;
+        }
+
+        .submit-btn, .back-btn {
+            font-size: 0.8rem;
+            padding: 6px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .accordion-header {
+            font-size: 0.95rem;
+            padding: 14px;
+        }
+
+        .address-title {
+            font-size: 0.9rem;
+        }
+
+        .address-info {
+            font-size: 0.75rem;
+        }
+
+        .address-radio {
+            width: 22px;
+            height: 22px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            font-size: 0.8rem;
+            height: 36px;
+        }
+
+        .form-group textarea {
+            height: 80px;
+        }
+
+        .submit-btn, .back-btn {
+            font-size: 0.9rem;
+            padding: 10px;
+        }
+
+        .addresses {
+            padding: 12px;
+        }
+
+        .address-card {
+            padding: 12px;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .container {
+            padding: 0 12px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+        }
+
+        .steps {
+            gap: 8px;
+        }
+
+        .step {
+            font-size: 0.8rem;
+        }
+
+        .step-number {
+            width: 18px;
+            height: 18px;
+            font-size: 0.75rem;
+        }
+
+        .accordion-header {
+            font-size: 1rem;
+            padding: 16px;
+        }
+
+        .addresses {
+            gap: 12px;
+            padding: 16px;
+        }
+
+        .address-card {
+            padding: 16px;
+        }
+
+        .address-title {
+            font-size: 1rem;
+        }
+
+        .address-info {
+            font-size: 0.8rem;
+        }
+
+        .address-radio {
+            width: 24px;
+            height: 24px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            font-size: 0.85rem;
+            height: 40px;
+        }
+
+        .form-group textarea {
+            height: 96px;
+        }
+
+        .submit-btn, .back-btn {
+            font-size: 0.95rem;
+            padding: 12px;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="address-section">
+        <h2 class="section-title">ثبت آدرس تحویل سفارش</h2>
+        <div class="steps">
+            <div class="step">
+                <span class="step-number">1</span>
+                سبد خرید
+            </div>
+            <div class="step active">
+                <span class="step-number">2</span>
+                ثبت آدرس
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                پرداخت
+            </div>
+        </div>
+        <div class="accordion">
+            {% if addresses %}
+            <div class="accordion-header active" data-target="addresses-content">
+                <span>آدرس‌های ذخیره شده</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="addresses-content active">
+                <div class="addresses">
+                    {% for address in addresses %}
+                    <div class="address-card {% if forloop.first %}selected{% endif %}"
+                         data-full-name="{{ address.full_name }}"
+                         data-phone-number="{{ address.phone_number }}"
+                         data-province="{{ address.province }}"
+                         data-city="{{ address.city }}"
+                         data-address="{{ address.address }}"
+                         data-postal-code="{{ address.postal_code }}">
+                        <input type="radio" class="address-radio" name="saved_address" value="{{ address.id }}" {% if forloop.first %}checked{% endif %}>
+                        <div class="address-title">آدرس {{ forloop.counter }}</div>
+                        <div class="address-info">
+                            <p>{{ address.full_name }}</p>
+                            <p>{{ address.address }}</p>
+                            <p>کد پستی: {{ address.postal_code }}</p>
+                            <p>تلفن: {{ address.phone_number }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <p style="text-align: center; color: var(--dark); font-size: 0.85rem; padding: 16px 0;">آدرسی ثبت نشده است.</p>
+            {% endif %}
+            <div class="accordion-header" data-target="new-address-content">
+                <span>آدرس جدید</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="new-address-content">
+                <form class="new-address-form" method="post" action="{% url 'cart:address' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="selected_address" id="selected_address" value="{% if addresses %}{{ addresses.0.id }}{% endif %}">
+                    <input type="hidden" name="use_saved_address" id="use_saved_address" value="true">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="full_name">نام کامل</label>
+                            <input type="text" id="full_name" name="full_name" value="{% if addresses %}{{ addresses.0.full_name }}{% endif %}">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone_number">شماره تلفن</label>
+                            <input type="text" id="phone_number" name="phone_number" value="{% if addresses %}{{ addresses.0.phone_number }}{% endif %}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="province">استان</label>
+                            <select id="province" name="province">
+                                <option value="">انتخاب استان</option>
+                                <option value="تهران" {% if addresses and addresses.0.province == 'تهران' %}selected{% endif %}>تهران</option>
+                                <option value="البرز" {% if addresses and addresses.0.province == 'البرز' %}selected{% endif %}>البرز</option>
+                                <option value="اصفهان" {% if addresses and addresses.0.province == 'اصفهان' %}selected{% endif %}>اصفهان</option>
+                                <option value="فارس" {% if addresses and addresses.0.province == 'فارس' %}selected{% endif %}>فارس</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="city">شهر</label>
+                            <select id="city" name="city">
+                                <option value="">انتخاب شهر</option>
+                                <option value="تهران" {% if addresses and addresses.0.city == 'تهران' %}selected{% endif %}>تهران</option>
+                                <option value="کرج" {% if addresses and addresses.0.city == 'کرج' %}selected{% endif %}>کرج</option>
+                                <option value="اصفهان" {% if addresses and addresses.0.city == 'اصفهان' %}selected{% endif %}>اصفهان</option>
+                                <option value="شیراز" {% if addresses and addresses.0.city == 'شیراز' %}selected{% endif %}>شیراز</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">آدرس دقیق</label>
+                        <textarea id="address" name="address">{% if addresses %}{{ addresses.0.address }}{% endif %}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="postal_code">کد پستی</label>
+                        <input type="text" id="postal_code" name="postal_code" value="{% if addresses %}{{ addresses.0.postal_code }}{% endif %}">
+                    </div>
+                    <div class="action-buttons">
+                        <a href="{% url 'cart:cart_detail' %}" class="back-btn">بازگشت به سبد خرید</a>
+                        <button type="submit" class="submit-btn">ادامه به پرداخت</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+        const addressRadios = document.querySelectorAll('.address-radio');
+        const selectedAddressInput = document.getElementById('selected_address');
+        const useSavedAddressInput = document.getElementById('use_saved_address');
+        const newAddressFields = document.querySelectorAll('.new-address-form input:not([type="hidden"]), .new-address-form select, .new-address-form textarea');
+        const formFields = {
+            full_name: document.getElementById('full_name'),
+            phone_number: document.getElementById('phone_number'),
+            province: document.getElementById('province'),
+            city: document.getElementById('city'),
+            address: document.getElementById('address'),
+            postal_code: document.getElementById('postal_code')
+        };
+
+        // Accordion toggle
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const target = document.querySelector(`.${header.dataset.target}`);
+                const isActive = header.classList.contains('active');
+
+                // Close all accordions
+                accordionHeaders.forEach(h => {
+                    h.classList.remove('active');
+                    document.querySelector(`.${h.dataset.target}`).classList.remove('active');
+                });
+
+                // Open clicked accordion if it wasn't active
+                if (!isActive) {
+                    header.classList.add('active');
+                    target.classList.add('active');
+                }
+            });
+        });
+
+        // Update form fields and selected address
+        addressRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                const card = radio.closest('.address-card');
+                selectedAddressInput.value = radio.value;
+                useSavedAddressInput.value = 'true';
+                document.querySelectorAll('.address-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+
+                // Populate form with selected address data
+                formFields.full_name.value = card.dataset.fullName || '';
+                formFields.phone_number.value = card.dataset.phoneNumber || '';
+                formFields.province.value = card.dataset.province || '';
+                formFields.city.value = card.dataset.city || '';
+                formFields.address.value = card.dataset.address || '';
+                formFields.postal_code.value = card.dataset.postalCode || '';
+            });
+        });
+
+        // Check if new address fields are modified
+        newAddressFields.forEach(field => {
+            field.addEventListener('input', () => {
+                const isAnyFieldFilled = Array.from(newAddressFields).some(f => f.value.trim() !== '');
+                useSavedAddressInput.value = isAnyFieldFilled ? 'false' : 'true';
+            });
+        });
+
+        // Form submission validation
+        document.querySelector('.new-address-form').addEventListener('submit', (e) => {
+            const isAnyFieldFilled = Array.from(newAddressFields).some(f => f.value.trim() !== '');
+            if (isAnyFieldFilled) {
+                // Require all fields if any are filled
+                newAddressFields.forEach(field => field.required = true);
+            } else if (!selectedAddressInput.value) {
+                // Prevent submission if no saved address and no new address
+                e.preventDefault();
+                alert('لطفاً یک آدرس انتخاب کنید یا آدرس جدید وارد کنید.');
+            }
+        });
+    });
+</script>
+{% endblock content %}

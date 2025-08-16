@@ -1,0 +1,529 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}پروفایل کاربری | استایل شاپ{% endblock title %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+  --primary: #ff6b6b;
+  --primary-light: #ff8e8e;
+  --primary-dark: #e05555;
+  --secondary: #794afa;
+  --secondary-light: #9a7aff;
+  --dark: #1e1e1e;
+  --dark-light: #333;
+  --light: #f8f9fa;
+  --gray: #e0e0e0;
+  --gray-dark: #b0b0b0;
+  --success: #2ecc71;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --transition: all 0.3s ease;
+  --border-radius: 8px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Vazir', sans-serif;
+}
+
+body {
+  background-color: #f5f5f5;
+  direction: rtl;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.profile-section {
+  margin: 30px 0 60px;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+  color: var(--dark);
+  font-weight: 700;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--primary);
+}
+
+/* Tab Styles */
+.profile-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  border-bottom: 1px solid var(--gray);
+  margin-bottom: 30px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: var(--shadow);
+}
+
+.profile-tab {
+  padding: 12px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--dark);
+  transition: var(--transition);
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-tab:hover {
+  color: var(--primary);
+}
+
+.profile-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.profile-tab i {
+  font-size: 1.1rem;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid var(--gray);
+  border-radius: var(--border-radius);
+  font-size: 0.95rem;
+  transition: var(--transition);
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+  outline: none;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+/* Address Card */
+.address-card {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--gray);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.address-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
+
+.address-card.default {
+  border: 2px solid var(--primary);
+  background: rgba(255, 107, 107, 0.05);
+}
+
+.address-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+}
+
+.default-badge {
+  background: var(--primary);
+  color: white;
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 20px;
+  margin-right: 10px;
+}
+
+.address-info {
+  color: var(--dark-light);
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 20px;
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5px;
+  transition: var(--transition);
+  font-size: 0.9rem;
+}
+
+.btn i {
+  margin-left: 8px;
+}
+
+.btn-primary {
+  background: var(--primary);
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+.btn-secondary {
+  background: var(--secondary);
+}
+
+.btn-secondary:hover {
+  background: var(--secondary-light);
+}
+
+.btn-danger {
+  background: var(--danger);
+}
+
+.btn-danger:hover {
+  background: #c0392b;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--gray-dark);
+  color: var(--dark);
+}
+
+.btn-outline:hover {
+  background: var(--gray);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--dark-light);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: var(--gray-dark);
+  margin-bottom: 20px;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  margin-top: 15px;
+}
+
+/* Account Status */
+.account-status {
+  display: flex;
+  align-items: center;
+  background: rgba(46, 204, 113, 0.1);
+  padding: 15px;
+  border-radius: var(--border-radius);
+  margin-bottom: 30px;
+}
+
+.account-status i {
+  font-size: 1.5rem;
+  color: var(--success);
+  margin-left: 15px;
+}
+
+.account-status .status-text {
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.account-status .status-subtext {
+  font-size: 0.9rem;
+  color: var(--dark-light);
+  margin-top: 5px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .profile-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 5px;
+  }
+  
+  .profile-tab {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .section-title {
+    font-size: 1.4rem;
+  }
+}
+</style>
+
+<div class="container">
+  <div class="profile-section">
+    <h2 class="section-title">پروفایل کاربری</h2>
+    
+    <!-- Account Status -->
+    <div class="account-status">
+      <i class="fas fa-check-circle"></i>
+      <div>
+        <div class="status-text">حساب شما فعال است</div>
+        <div class="status-subtext">عضو شده در ۱۴۰۲/۰۵/۱۵ | آخرین ورود: امروز ۱۴:۳۰</div>
+      </div>
+    </div>
+    
+    <!-- Profile Tabs -->
+    <div class="profile-tabs">
+      <div class="profile-tab active" data-tab="personal-info">
+        <i class="fas fa-user"></i> اطلاعات شخصی
+      </div>
+      <div class="profile-tab" data-tab="addresses">
+        <i class="fas fa-map-marker-alt"></i> آدرس‌ها
+      </div>
+      <div class="profile-tab" data-tab="security">
+        <i class="fas fa-lock"></i> امنیت
+      </div>
+      <div class="profile-tab" data-tab="wishlist">
+        <i class="fas fa-heart"></i> علاقه‌مندی‌ها
+      </div>
+      <div class="profile-tab" data-tab="orders">
+        <i class="fas fa-shopping-bag"></i> سفارشات
+      </div>
+    </div>
+    
+    <!-- Tab Contents -->
+    <div class="tab-content active" id="personal-info">
+      <h3 class="section-title">اطلاعات شخصی</h3>
+      <form method="post" action="{% url 'account:profile' %}">
+        {% csrf_token %}
+        <div class="form-row">
+          <div class="form-group">
+            <label for="first_name">نام</label>
+            <input type="text" id="first_name" name="first_name" class="form-control" value="{{ request.user.first_name }}" required>
+          </div>
+          <div class="form-group">
+            <label for="last_name">نام خانوادگی</label>
+            <input type="text" id="last_name" name="last_name" class="form-control" value="{{ request.user.last_name }}" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">ایمیل</label>
+            <input type="email" id="email" name="email" class="form-control" value="{{ request.user.email }}" required>
+          </div>
+          <div class="form-group">
+            <label for="username">شماره موبایل</label>
+            <input type="text" id="username" name="username" class="form-control" value="{{ request.user.username }}" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="birth_date">تاریخ تولد</label>
+            <input type="date" id="birth_date" name="birth_date" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="gender">جنسیت</label>
+            <select id="gender" name="gender" class="form-control">
+              <option value="male">مرد</option>
+              <option value="female">زن</option>
+              <option value="other">سایر</option>
+            </select>
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save"></i> ذخیره تغییرات
+        </button>
+      </form>
+    </div>
+    
+    <div class="tab-content" id="addresses">
+      <h3 class="section-title">آدرس‌های من</h3>
+      
+      {% if addresses %}
+        {% for address in addresses %}
+          <div class="address-card {% if address.is_default %}default{% endif %}">
+            <div class="address-title">
+              {% if address.is_default %}<span class="default-badge">پیش‌فرض</span>{% endif %}
+              آدرس {{ forloop.counter }}
+            </div>
+            <div class="address-info">
+              <p><strong>{{ address.full_name }}</strong></p>
+              <p>{{ address.province }}، {{ address.city }}، {{ address.address }}</p>
+              <p>کد پستی: {{ address.postal_code }}</p>
+              <p>تلفن: {{ address.phone_number }}</p>
+            </div>
+            <div class="address-actions">
+              <a href="" class="btn btn-secondary">
+                <i class="fas fa-edit"></i> ویرایش
+              </a>
+              <a href="" class="btn btn-danger">
+                <i class="fas fa-trash"></i> حذف
+              </a>
+              {% if not address.is_default %}
+                <a href="" class="btn btn-outline">
+                  <i class="fas fa-check-circle"></i> پیش‌فرض
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <i class="fas fa-map-marker-alt"></i>
+          <h4>آدرسی ثبت نشده است</h4>
+          <p>شما هنوز هیچ آدرسی به حساب کاربری خود اضافه نکرده‌اید.</p>
+        </div>
+      {% endif %}
+      
+      <a href="" class="btn btn-primary">
+        <i class="fas fa-plus"></i> افزودن آدرس جدید
+      </a>
+    </div>
+    
+    <div class="tab-content" id="security">
+      <h3 class="section-title">تنظیمات امنیتی</h3>
+      
+      <div class="form-group">
+        <label>کلمه عبور</label>
+        <p>آخرین تغییر: ۱۴۰۲/۰۳/۱۰</p>
+        <a href="{% url 'account:change_password' %}" class="btn btn-primary">
+          <i class="fas fa-key"></i> تغییر رمز عبور
+        </a>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="wishlist">
+      <h3 class="section-title">لیست علاقه‌مندی‌ها</h3>
+      <div class="empty-state">
+        <i class="fas fa-heart"></i>
+        <h4>لیست علاقه‌مندی‌های شما خالی است</h4>
+        <p>محصولات مورد علاقه خود را به این لیست اضافه کنید تا بعداً ببینید.</p>
+        <a href="{% url 'account:favorites' %}" class="btn btn-primary mt-3">
+          <i class="fas fa-shopping-bag"></i> مشاهده محصولات
+        </a>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="orders">
+      <h3 class="section-title">سفارشات من</h3>
+      <div class="empty-state">
+        <i class="fas fa-shopping-bag"></i>
+        <h4>هنوز سفارشی ثبت نکرده‌اید</h4>
+        <p>پس از ثبت اولین سفارش، جزئیات آن در این بخش نمایش داده می‌شود.</p>
+        <a href="{% url 'cart:orders' %}" class="btn btn-primary mt-3">
+          <i class="fas fa-shopping-bag"></i> مشاهده محصولات
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Tab Switching Functionality
+  const tabs = document.querySelectorAll('.profile-tab');
+  const contents = document.querySelectorAll('.tab-content');
+  
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      // Remove active class from all tabs and contents
+      tabs.forEach(t => t.classList.remove('active'));
+      contents.forEach(c => c.classList.remove('active'));
+      
+      // Add active class to clicked tab and corresponding content
+      tab.classList.add('active');
+      const tabId = tab.getAttribute('data-tab');
+      document.getElementById(tabId).classList.add('active');
+      
+      // Update URL hash
+      window.location.hash = tabId;
+    });
+  });
+  
+  // Check URL hash on page load
+  const hash = window.location.hash.substring(1);
+  if (hash) {
+    const tab = document.querySelector(`.profile-tab[data-tab="${hash}"]`);
+    if (tab) {
+      tabs.forEach(t => t.classList.remove('active'));
+      contents.forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(hash).classList.add('active');
+    }
+  }
+  
+  // Form validation
+  document.querySelector('form')?.addEventListener('submit', function(e) {
+    const firstName = document.getElementById('first_name').value.trim();
+    const lastName = document.getElementById('last_name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('username').value.trim();
+    
+    if (!firstName || !lastName || !email || !phone) {
+      e.preventDefault();
+      alert('لطفا تمام فیلدهای ضروری را پر کنید.');
+    }
+  });
+});
+</script>
+{% endblock content %}

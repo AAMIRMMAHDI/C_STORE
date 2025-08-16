@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}ورود | استایل شاپ{% endblock title %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #ff6b6b;
+        --secondary: #794afa;
+        --dark: #1e1e1e;
+        --light: #f8f9fa;
+        --gray: #e0e0e0;
+        --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 15px;
+        direction: rtl;
+    }
+    .login-section {
+        margin: 30px 0 60px;
+    }
+    .section-title {
+        font-size: 1.8rem;
+        margin-bottom: 30px;
+        position: relative;
+        padding-bottom: 15px;
+        color: var(--dark);
+    }
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 60px;
+        height: 3px;
+        background: var(--primary);
+    }
+    .login-form {
+        background: white;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        padding: 20px;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: var(--dark);
+    }
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--gray);
+        border-radius: 5px;
+        font-size: 0.9rem;
+    }
+    .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .form-options a {
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+    .form-options a:hover {
+        text-decoration: underline;
+    }
+    .login-btn {
+        width: 100%;
+        padding: 15px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    .login-btn:hover {
+        background: #e05555;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+    }
+    .register-link {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .register-link a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .register-link a:hover {
+        text-decoration: underline;
+    }
+    @media (max-width: 576px) {
+        .section-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="login-section">
+        <h2 class="section-title">ورود به حساب کاربری</h2>
+        <p style="text-align: center; color: var(--dark); margin-bottom: 20px;">
+            برای دسترسی به پروفایل خود وارد شوید
+        </p>
+        <form class="login-form" method="post" action="{% url 'account:login' %}">
+            {% csrf_token %}
+            {% if form.errors %}
+                <p style="color: #e74c3c; text-align: center; margin-bottom: 20px;">
+                    ایمیل یا رمز عبور اشتباه است.
+                </p>
+            {% endif %}
+            <div class="form-group">
+                <label for="username">ایمیل یا شماره موبایل</label>
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                <label for="password">کلمه عبور</label>
+                {{ form.password }}
+            </div>
+            <div class="form-options">
+                <label>
+                    <input type="checkbox" name="remember" checked> مرا به خاطر بسپار
+                </label>
+                <a href="#">رمز عبور را فراموش کرده‌اید؟</a>
+            </div>
+            <button type="submit" class="login-btn">ورود به حساب</button>
+            <div class="register-link">
+                <p>حساب کاربری ندارید؟ <a href="{% url 'account:register' %}">ثبت‌نام کنید</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

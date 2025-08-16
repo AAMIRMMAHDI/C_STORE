@@ -1,0 +1,595 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}استایل شاپ | پرداخت{% endblock title %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --primary: #ff6b6b;
+        --secondary: #794afa;
+        --dark: #1e1e1e;
+        --light: #f8f9fa;
+        --gray: #e0e0e0;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
+        --border-radius: 8px;
+        --font-family: 'Vazir', 'Segoe UI', sans-serif;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 6px;
+        direction: rtl;
+    }
+
+    .payment-section {
+        margin: 16px 0 32px;
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        position: relative;
+        padding-bottom: 6px;
+        color: var(--dark);
+    }
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 36px;
+        height: 3px;
+        background: var(--primary);
+    }
+
+    .steps {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 12px;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .step {
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+        font-size: 0.75rem;
+        color: #666;
+        transition: var(--transition);
+    }
+
+    .step.active {
+        color: var(--primary);
+    }
+
+    .step-number {
+        width: 16px;
+        height: 16px;
+        background: var(--gray);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 4px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .step.active .step-number {
+        background: var(--primary);
+        color: white;
+    }
+
+    .payment-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 8px;
+    }
+
+    .payment-method {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 8px;
+    }
+
+    .method-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--dark);
+    }
+
+    .method-description {
+        color: #555;
+        font-size: 0.7rem;
+        margin-bottom: 12px;
+    }
+
+    .method-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .method-option {
+        background: var(--light);
+        border-radius: var(--border-radius);
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        position: relative;
+        border: 2px solid transparent;
+        transition: var(--transition);
+    }
+
+    .method-option.selected {
+        border-color: var(--primary);
+        background: rgba(255, 107, 107, 0.05);
+    }
+
+    .method-radio {
+        width: 18px;
+        height: 18px;
+        margin-left: 8px;
+        cursor: pointer;
+    }
+
+    .method-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .accordion-header {
+        background: var(--light);
+        padding: 10px;
+        border-radius: var(--border-radius);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--dark);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--transition);
+        margin-bottom: 8px;
+    }
+
+    .accordion-header:hover {
+        background: var(--gray);
+    }
+
+    .accordion-header .fa-chevron-down {
+        transition: transform 0.3s ease;
+    }
+
+    .accordion-header.active .fa-chevron-down {
+        transform: rotate(180deg);
+    }
+
+    .order-summary-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .order-summary-content.active {
+        max-height: 1000px; /* Adjust based on content */
+    }
+
+    .order-summary {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 8px;
+        position: sticky;
+        top: 80px;
+    }
+
+    .address-info {
+        color: #555;
+        font-size: 0.7rem;
+        line-height: 1.5;
+        margin-bottom: 8px;
+    }
+
+    .address-info p {
+        margin-bottom: 4px;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 0.8rem;
+        color: #555;
+    }
+
+    .summary-item.total {
+        font-weight: 700;
+        color: var(--dark);
+        font-size: 0.9rem;
+        border-top: 1px solid var(--gray);
+        padding-top: 8px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .pay-btn, .back-btn {
+        flex: 1;
+        padding: 8px;
+        border: none;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        font-size: 0.8rem;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .pay-btn {
+        background: var(--primary);
+        color: white;
+    }
+
+    .pay-btn:hover {
+        background: #e05555;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    .back-btn {
+        background: var(--light);
+        color: var(--dark);
+        border: 1px solid var(--gray);
+    }
+
+    .back-btn:hover {
+        background: var(--gray);
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .payment-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .order-summary {
+            position: static;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .method-options {
+            gap: 6px;
+        }
+
+        .method-option {
+            padding: 6px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding: 0 6px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+        }
+
+        .steps {
+            justify-content: flex-start;
+            gap: 6px;
+        }
+
+        .step {
+            font-size: 0.7rem;
+        }
+
+        .step-number {
+            width: 16px;
+            height: 16px;
+            font-size: 0.65rem;
+        }
+
+        .accordion-header {
+            font-size: 0.8rem;
+            padding: 8px;
+        }
+
+        .payment-method {
+            padding: 6px;
+        }
+
+        .method-title {
+            font-size: 0.8rem;
+        }
+
+        .method-description {
+            font-size: 0.65rem;
+        }
+
+        .method-radio {
+            width: 16px;
+            height: 16px;
+        }
+
+        .method-label {
+            font-size: 0.75rem;
+        }
+
+        .order-summary {
+            padding: 6px;
+        }
+
+        .address-info {
+            font-size: 0.65rem;
+        }
+
+        .summary-item {
+            font-size: 0.75rem;
+        }
+
+        .summary-item.total {
+            font-size: 0.85rem;
+        }
+
+        .pay-btn, .back-btn {
+            font-size: 0.75rem;
+            padding: 6px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .payment-method {
+            padding: 12px;
+        }
+
+        .method-title {
+            font-size: 0.9rem;
+        }
+
+        .method-description {
+            font-size: 0.75rem;
+        }
+
+        .method-radio {
+            width: 20px;
+            height: 20px;
+        }
+
+        .method-label {
+            font-size: 0.85rem;
+        }
+
+        .order-summary {
+            padding: 12px;
+        }
+
+        .address-info {
+            font-size: 0.75rem;
+        }
+
+        .summary-item {
+            font-size: 0.85rem;
+        }
+
+        .summary-item.total {
+            font-size: 1rem;
+        }
+
+        .pay-btn, .back-btn {
+            font-size: 0.9rem;
+            padding: 10px;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .container {
+            padding: 0 12px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+        }
+
+        .steps {
+            gap: 8px;
+        }
+
+        .step {
+            font-size: 0.8rem;
+        }
+
+        .step-number {
+            width: 18px;
+            height: 18px;
+            font-size: 0.75rem;
+        }
+
+        .accordion-header {
+            font-size: 0.9rem;
+            padding: 12px;
+        }
+
+        .payment-method {
+            padding: 16px;
+        }
+
+        .method-title {
+            font-size: 1rem;
+        }
+
+        .method-description {
+            font-size: 0.8rem;
+        }
+
+        .method-radio {
+            width: 24px;
+            height: 24px;
+        }
+
+        .method-label {
+            font-size: 0.9rem;
+        }
+
+        .order-summary {
+            padding: 16px;
+        }
+
+        .address-info {
+            font-size: 0.8rem;
+        }
+
+        .summary-item {
+            font-size: 0.9rem;
+        }
+
+        .summary-item.total {
+            font-size: 1.1rem;
+        }
+
+        .pay-btn, .back-btn {
+            font-size: 0.95rem;
+            padding: 12px;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="payment-section">
+        <h2 class="section-title">پرداخت و تکمیل سفارش</h2>
+        <div class="steps">
+            <div class="step">
+                <span class="step-number">1</span>
+                سبد خرید
+            </div>
+            <div class="step">
+                <span class="step-number">2</span>
+                ثبت آدرس
+            </div>
+            <div class="step active">
+                <span class="step-number">3</span>
+                پرداخت
+            </div>
+        </div>
+        <div class="payment-grid">
+            <div class="payment-method">
+                <h3 class="method-title">روش پرداخت</h3>
+                <div class="method-description">لطفاً روش پرداخت مورد نظر خود را انتخاب کنید.</div>
+                <form method="post" action="{% url 'cart:payment' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="payment_method" id="payment_method" value="online">
+                    <div class="method-options">
+                        <div class="method-option selected">
+                            <input type="radio" class="method-radio" name="payment_option" value="online" checked>
+                            <label class="method-label">پرداخت آنلاین</label>
+                        </div>
+                        <div class="method-option">
+                            <input type="radio" class="method-radio" name="payment_option" value="cod">
+                            <label class="method-label">پرداخت در محل</label>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <a href="{% url 'cart:address' %}" class="back-btn">بازگشت به مرحله قبل</a>
+                        <button type="submit" class="pay-btn">تأیید و تکمیل سفارش</button>
+                    </div>
+                </form>
+            </div>
+            <div class="order-summary">
+                <div class="accordion-header active" data-target="order-summary-content">
+                    <span>خلاصه سفارش</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="order-summary-content active">
+                    {% if address %}
+                    <div class="address-info">
+                        <p>آدرس تحویل: {{ address.address }}</p>
+                        <p>کد پستی: {{ address.postal_code }}</p>
+                        <p>تحویل‌گیرنده: {{ address.full_name }} - {{ address.phone_number }}</p>
+                    </div>
+                    {% endif %}
+                    {% for item in cart_items %}
+                    <div class="summary-item">
+                        <span>{{ item.product.name }}</span>
+                        <span>{{ item.product.discount_price|default:item.product.price }} تومان</span>
+                    </div>
+                    {% endfor %}
+                    <div class="summary-item">
+                        <span>تخفیف</span>
+                        <span>-{{ total_discount }} تومان</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>هزینه ارسال</span>
+                        <span>رایگان</span>
+                    </div>
+                    <div class="summary-item total">
+                        <span>مبلغ قابل پرداخت</span>
+                        <span>{{ final_price }} تومان</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const accordionHeader = document.querySelector('.accordion-header');
+        const paymentRadios = document.querySelectorAll('.method-radio');
+        const paymentMethodInput = document.getElementById('payment_method');
+        const form = document.querySelector('.payment-method form');
+
+        // Accordion toggle
+        accordionHeader.addEventListener('click', () => {
+            const target = document.querySelector(`.${accordionHeader.dataset.target}`);
+            const isActive = accordionHeader.classList.contains('active');
+            accordionHeader.classList.toggle('active');
+            target.classList.toggle('active');
+        });
+
+        // Payment method selection
+        paymentRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                paymentMethodInput.value = radio.value;
+                document.querySelectorAll('.method-option').forEach(option => option.classList.remove('selected'));
+                radio.closest('.method-option').classList.add('selected');
+            });
+        });
+
+        // Form submission validation
+        form.addEventListener('submit', (e) => {
+            if (!paymentMethodInput.value) {
+                e.preventDefault();
+                alert('لطفاً یک روش پرداخت انتخاب کنید.');
+            }
+        });
+
+        // Collapse accordion on mobile by default
+        if (window.innerWidth <= 576) {
+            accordionHeader.classList.remove('active');
+            document.querySelector('.order-summary-content').classList.remove('active');
+        }
+    });
+</script>
+{% endblock content %}

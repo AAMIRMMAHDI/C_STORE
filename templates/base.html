@@ -1,0 +1,559 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}استایل شاپ | فروشگاه آنلاین پوشاک{% endblock title %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --secondary: #794afa;
+            --dark: #1e1e1e;
+            --light: #f8f9fa;
+            --gray: #e0e0e0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazir', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            padding-top: 70px;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        /* Side Menu Styles */
+        .side-menu {
+            position: fixed;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            padding: 15px 5px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px 0 0 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .side-menu-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--dark);
+            transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .side-menu-item:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .side-menu-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            background: var(--primary);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* Dropdown in Side Menu */
+        .side-menu-dropdown {
+            position: absolute;
+            right: 100%;
+            top: 0;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 180px;
+            padding: 10px 0;
+            display: none;
+            z-index: 1001;
+            margin-right: 10px;
+        }
+
+        .side-menu-item.active-dropdown .side-menu-dropdown {
+            display: block;
+        }
+
+        .side-menu-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .side-menu-dropdown a:hover {
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--primary);
+        }
+
+        /* Header Styles */
+        .header {
+            background: white;
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 1000;
+            padding: 10px 0;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo i {
+            font-size: 1.4rem;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 10px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .nav-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-tab {
+            padding: 10px 15px;
+            font-weight: 600;
+            color: var(--dark);
+            text-decoration: none;
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-tab:hover {
+            color: var(--primary);
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .nav-tab i {
+            font-size: 1rem;
+        }
+
+        /* User Actions - Hidden in this version */
+        .user-actions {
+            display: none;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding-bottom: 20px;
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 25px 15px;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px 20px;
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .copyright {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-top: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .side-menu {
+                top: auto;
+                bottom: 20px;
+                right: 10px;
+                transform: none;
+                flex-direction: row;
+                border-radius: 20px;
+                padding: 5px 10px;
+                background: rgba(255, 255, 255, 0.95);
+            }
+            
+            .side-menu-item {
+                width: 36px;
+                height: 36px;
+            }
+
+            .side-menu-dropdown {
+                right: 0;
+                left: auto;
+                top: auto;
+                bottom: 100%;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .nav-tabs {
+                padding-bottom: 5px;
+            }
+
+            .nav-tab {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+
+            .footer {
+                padding: 20px 10px;
+            }
+
+            .footer-links {
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-container {
+                padding: 0 10px;
+            }
+
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .nav-tab {
+                font-size: 0.85rem;
+                padding: 8px 10px;
+            }
+
+            .footer-links {
+                gap: 10px 15px;
+            }
+
+            .footer-links a {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .footer-links {
+                gap: 8px 12px;
+            }
+            
+            .footer-links a {
+                font-size: 0.75rem;
+            }
+            
+            .copyright {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- منوی کناری یکپارچه -->
+    <div class="side-menu">
+        <!-- آیتم‌های کاربر -->
+        <div class="side-menu-item" id="profile-menu-item">
+            <i class="fas fa-user"></i>
+            <div class="side-menu-dropdown">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'account:dashboard' %}">
+                        <i class="fas fa-user"></i>
+                        داشبورد
+                    </a>
+                    <a href="{% url 'account:profile' %}">
+                        <i class="fas fa-user-edit"></i>
+                        پروفایل
+                    </a>
+                    <div style="height: 1px; background: var(--gray); margin: 5px 0;"></div>
+                    <a href="{% url 'account:logout' %}">
+                        <i class="fas fa-sign-out-alt"></i>
+                        خروج
+                    </a>
+                {% else %}
+                    <a href="{% url 'account:login' %}">
+                        <i class="fas fa-sign-in-alt"></i>
+                        ورود
+                    </a>
+                    <a href="{% url 'account:register' %}">
+                        <i class="fas fa-user-plus"></i>
+                        ثبت‌نام
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- آیتم سفارشات -->
+        <a href="{% url 'cart:orders' %}" class="side-menu-item">
+            <i class="fas fa-shopping-bag"></i>
+            {% if order_count %}
+                <span class="badge">{{ order_count }}</span>
+            {% endif %}
+        </a>
+        
+        <!-- آیتم علاقه‌مندی‌ها -->
+        <a href="{% url 'account:favorites' %}" class="side-menu-item">
+            <i class="fas fa-star"></i>
+            {% if wishlist_count %}
+                <span class="badge">{{ wishlist_count }}</span>
+            {% endif %}
+        </a>
+        
+        <!-- آیتم سبد خرید -->
+        <a href="{% url 'cart:cart_detail' %}" class="side-menu-item">
+            <i class="fas fa-shopping-cart"></i>
+            {% if cart_items %}
+                <span class="badge">{{ cart_items.count }}</span>
+            {% endif %}
+        </a>
+    </div>
+
+    <header class="header">
+        <div class="header-container">
+            <a href="{% url 'root:index' %}" class="logo">
+                <i class="fas fa-store"></i>
+            </a>
+            
+            <div class="nav-tabs">
+                <a href="{% url 'root:index' %}" class="nav-tab">
+                    <i class="fas fa-home"></i> 
+                </a>
+                <a href="{% url 'products:product_list' %}" class="nav-tab">
+                    <i class="fas fa-tshirt"></i> 
+                </a>
+
+                <a href="{% url 'root:about' %}" class="nav-tab">
+                    <i class="fas fa-info-circle"></i>
+                </a>
+                <a href="{% url 'root:contact' %}" class="nav-tab">
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
+
+            <div class="user-actions">
+                <!-- این بخش در این نسخه مخفی شده و همه چیز در منوی کناری است -->
+            </div>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock content %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <ul class="footer-links">
+                <li><a href="{% url 'root:index' %}">خانه</a></li>
+                <li><a href="{% url 'products:product_list' %}">محصولات</a></li>
+                <li><a href="#">درباره ما</a></li>
+                <li><a href="#">تماس با ما</a></li>
+                <li><a href="#">سوالات متداول</a></li>
+            </ul>
+            <div class="copyright">
+                تمامی حقوق برای استایل شاپ محفوظ است © ۱۴۰۲
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // مدیریت منوی پروفایل
+            const profileMenuItem = document.getElementById('profile-menu-item');
+            const dropdownLinks = profileMenuItem.querySelectorAll('.side-menu-dropdown a');
+            let isMobile = window.innerWidth <= 768;
+            
+            // تابع برای بستن همه منوهای باز
+            function closeAllDropdowns() {
+                document.querySelectorAll('.side-menu-item').forEach(item => {
+                    item.classList.remove('active-dropdown');
+                });
+            }
+            
+            // رویداد کلیک برای آیتم پروفایل
+            profileMenuItem.addEventListener('click', function(e) {
+                // اگر روی لینکی داخل منوی کشویی کلیک شده، اجازه دهیم کارش را انجام دهد
+                if (e.target.closest('a')) {
+                    return;
+                }
+                
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // اگر منوی فعلی باز است، ببند
+                if (this.classList.contains('active-dropdown')) {
+                    this.classList.remove('active-dropdown');
+                    return;
+                }
+                
+                // بستن بقیه منوها
+                closeAllDropdowns();
+                
+                // باز کردن منوی جاری
+                this.classList.add('active-dropdown');
+            });
+            
+            // بستن منوها با کلیک خارج از آنها
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.side-menu-item') && !e.target.closest('.side-menu-dropdown')) {
+                    closeAllDropdowns();
+                }
+            });
+            
+            // جلوگیری از بسته شدن منو هنگام کلیک روی لینک‌های منوی کشویی
+            dropdownLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    // بستن منو پس از کلیک روی لینک در نسخه موبایل
+                    if (isMobile) {
+                        closeAllDropdowns();
+                    }
+                });
+            });
+
+            // تنظیم تب فعال بر اساس URL جاری
+            const navTabs = document.querySelectorAll('.nav-tab');
+            const currentPath = window.location.pathname;
+
+            navTabs.forEach(tab => {
+                if (tab.getAttribute('href') === currentPath) {
+                    tab.classList.add('active');
+                }
+            });
+
+            // مدیریت رویدادهای هاور برای دسکتاپ
+            function setupDesktopHover() {
+                profileMenuItem.addEventListener('mouseenter', function() {
+                    closeAllDropdowns();
+                    this.classList.add('active-dropdown');
+                });
+                
+                const dropdown = profileMenuItem.querySelector('.side-menu-dropdown');
+                if (dropdown) {
+                    dropdown.addEventListener('mouseleave', function() {
+                        profileMenuItem.classList.remove('active-dropdown');
+                    });
+                }
+            }
+            
+            // مدیریت رویدادهای تاچ برای موبایل
+            function setupMobileTouch() {
+                // در نسخه موبایل، رویدادهای هاور را حذف می‌کنیم
+                profileMenuItem.removeEventListener('mouseenter', null);
+                const dropdown = profileMenuItem.querySelector('.side-menu-dropdown');
+                if (dropdown) {
+                    dropdown.removeEventListener('mouseleave', null);
+                }
+            }
+            
+            // تشخیص اولیه دستگاه
+            if (isMobile) {
+                setupMobileTouch();
+            } else {
+                setupDesktopHover();
+            }
+            
+            // تنظیم مجدد رویدادها هنگام تغییر سایز صفحه
+            window.addEventListener('resize', function() {
+                isMobile = window.innerWidth <= 768;
+                
+                if (isMobile) {
+                    setupMobileTouch();
+                } else {
+                    setupDesktopHover();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
