@@ -16,4 +16,5 @@ urlpatterns = [
     path('reorder/<str:order_number>/', views.reorder, name='reorder'),
     path('track/<str:order_number>/', views.track_order, name='track_order'),
     path('invoice/<str:order_number>/', views.download_invoice, name='download_invoice'),
+    path('admincart/', views.admin_cart_management, name='admin_cart_management'),
 ]

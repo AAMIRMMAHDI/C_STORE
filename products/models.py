@@ -17,6 +17,7 @@ class Product(models.Model):
     views_count = models.IntegerField(default=0, verbose_name="تعداد بازدید")
     sales_count = models.IntegerField(default=0, verbose_name="تعداد فروش")
     is_new = models.BooleanField(default=False, verbose_name="جدید")
+    is_featured = models.BooleanField(default=False, verbose_name="ویژه")  # فیلد جدید اضافه شده
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ به‌روزرسانی")
 
@@ -108,3 +109,9 @@ class ShippingPolicy(models.Model):
 
     def __str__(self):
         return self.title
+    
+
+
+
+
+    

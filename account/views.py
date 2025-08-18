@@ -1,12 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from .forms import LoginForm, RegisterForm, ProfileForm, CustomPasswordChangeForm
 from cart.models import Cart, CartItem, Order, Favorite
 from django.contrib.auth.models import User
 from products.models import Product
 from django.http import HttpResponseRedirect
+from django.contrib.auth.forms import UserChangeForm
+from django import forms
+
+# Check if the user is an admin
+def is_admin(user):
+    return user.is_staff or user.is_superuser
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -127,3 +133,50 @@ def favorites(request):
             messages.success(request, f'{product.name} از لیست علاقه‌مندی‌ها حذف شد.')
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', 'account:favorites'))
     return render(request, 'account/favorites.html', {'favorites': favorites})
+
+@login_required
+@user_passes_test(is_admin)
+def admin_user_management(request):
+    users = User.objects.all()
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        user_id = request.POST.get('user_id')
+        user = get_object_or_404(User, id=user_id)
+
+        if action == 'delete':
+            if user != request.user:  # Prevent admin from deleting their own account
+                user.delete()
+                messages.success(request, f'کاربر {user.username} با موفقیت حذف شد.')
+            else:
+                messages.error(request, 'نمی‌توانید حساب خودتان را حذف کنید.')
+            return redirect('account:admin_user_management')
+
+        elif action == 'toggle_admin':
+            user.is_staff = not user.is_staff
+            user.is_superuser = not user.is_superuser
+            user.save()
+            status = 'ادمین' if user.is_staff else 'کاربر عادی'
+            messages.success(request, f'وضعیت کاربر {user.username} به {status} تغییر کرد.')
+            return redirect('account:admin_user_management')
+
+        elif action == 'edit':
+            form = UserChangeForm(request.POST, instance=user)
+            if form.is_valid():
+                form.save()
+                messages.success(request, f'اطلاعات کاربر {user.username} به‌روزرسانی شد.')
+                return redirect('account:admin_user_management')
+            else:
+                messages.error(request, 'خطا در به‌روزرسانی اطلاعات کاربر.')
+                return render(request, 'admin/account/admin_user_management.html', {
+                    'users': users,
+                    'edit_form': form,
+                    'edit_user': user,
+                })
+
+    else:
+        form = UserChangeForm()
+
+    return render(request, 'admin/account/admin_user_management.html', {
+        'users': users,
+        'edit_form': form,
+    })

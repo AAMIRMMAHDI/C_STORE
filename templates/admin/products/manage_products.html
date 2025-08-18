@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت محصولات | فروشگاه اینترنتی</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --secondary-color: #f8fafc;
+            --success-color: #10b981;
+            --info-color: #06b6d4;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-color: #f8fafc;
+            --dark-color: #1e293b;
+        }
+        
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f8f9fc;
+            color: #333;
+            padding-bottom: 80px; /* فضای منوی پایین */
+        }
+        
+        /* نوار پایین صفحه */
+        .bottom-navbar {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            height: 60px;
+            background-color: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.75rem;
+            padding: 8px;
+            transition: all 0.2s;
+        }
+        
+        .bottom-nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+        
+        .bottom-nav-item.active {
+            color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+        
+        .bottom-nav-item:hover {
+            color: var(--primary-color);
+        }
+        
+        /* محتوا */
+        .main-content {
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        /* کارت محصولات */
+        .product-card {
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-header {
+            padding: 15px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8fafc;
+        }
+        
+        .product-body {
+            padding: 15px;
+        }
+        
+        /* فرم */
+        .form-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            padding: 10px 15px;
+        }
+        
+        .color-group, .size-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .color-group input[type="color"] {
+            width: 50px;
+            height: 38px;
+            padding: 0;
+            border: none;
+            cursor: pointer;
+        }
+        
+        /* جستجو */
+        .search-container {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 15px 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            padding-right: 45px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .search-button {
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* دکمه‌ها */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        /* حالت دسکتاپ */
+        @media (min-width: 992px) {
+            .bottom-navbar {
+                display: none;
+            }
+            
+            body {
+                padding-bottom: 0;
+            }
+            
+            .main-content {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 30px;
+                display: flex;
+                gap: 30px;
+            }
+            
+            .form-section {
+                width: 50%;
+            }
+            
+            .list-section {
+                width: 50%;
+            }
+            
+            .search-container {
+                position: static;
+                padding: 20px 0;
+                box-shadow: none;
+            }
+            
+            .search-box {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- جستجو -->
+    <div class="search-container">
+        <div class="search-box">
+            <form id="searchForm" method="get">
+                <input type="text" class="search-input" name="search" placeholder="جستجوی نام محصول یا برند..." value="{{ request.GET.search }}">
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- محتوای اصلی -->
+    <div class="main-content">
+        {% if messages %}
+            <div class="alert alert-info">
+                {% for message in messages %}
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <div>{{ message }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="form-section">
+            <h2 class="mb-4">{% if product %}ویرایش محصول{% else %}اضافه کردن محصول جدید{% endif %}</h2>
+            <button type="button" class="btn btn-primary mb-3" onclick="resetForm()">اضافه کردن محصول جدید</button>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="{% if product %}edit{% else %}create{% endif %}">
+                {% if product %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                {% endif %}
+                <div class="form-group mb-3">
+                    <label for="name">نام محصول:</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{% if product %}{{ product.name }}{% endif %}" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="description">توضیحات:</label>
+                    <textarea class="form-control" id="description" name="description" rows="4">{% if product %}{{ product.description }}{% endif %}</textarea>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="price">قیمت:</label>
+                    <input type="number" class="form-control" id="price" name="price" step="1" value="{% if product %}{{ product.price }}{% endif %}" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="discount_price">قیمت با تخفیف:</label>
+                    <input type="number" class="form-control" id="discount_price" name="discount_price" step="1" value="{% if product %}{{ product.discount_price }}{% endif %}">
+                </div>
+                <div class="form-group mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="stock_status" name="stock_status" {% if product and product.stock_status %}checked{% endif %}>
+                        <label class="form-check-label" for="stock_status">موجودی</label>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="category">دسته‌بندی:</label>
+                    <input type="text" class="form-control" id="category" name="category" value="{% if product %}{{ product.category }}{% endif %}" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="brand">برند:</label>
+                    <input type="text" class="form-control" id="brand" name="brand" value="{% if product %}{{ product.brand }}{% endif %}" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="product_code">کد محصول:</label>
+                    <input type="text" class="form-control" id="product_code" name="product_code" value="{% if product %}{{ product.product_code }}{% endif %}" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="tags">تگ‌ها:</label>
+                    <input type="text" class="form-control" id="tags" name="tags" value="{% if product %}{{ product.tags }}{% endif %}">
+                </div>
+                <div class="form-group mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="is_new" name="is_new" {% if product and product.is_new %}checked{% endif %}>
+                        <label class="form-check-label" for="is_new">جدید</label>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="is_featured" name="is_featured" {% if product and product.is_featured %}checked{% endif %}>
+                        <label class="form-check-label" for="is_featured">ویژه</label>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="image">تصویر اصلی:</label>
+                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                </div>
+                <div class="form-group mb-3">
+                    <label>رنگ‌ها:</label>
+                    <div class="form-check mb-2">
+                        <input type="checkbox" class="form-check-input" name="update_colors" id="update_colors" {% if not product %}checked{% endif %}>
+                        <label class="form-check-label" for="update_colors">به‌روزرسانی رنگ‌ها</label>
+                    </div>
+                    <div id="color-container">
+                        {% for color in colors %}
+                            <div class="color-group mb-2">
+                                <input type="text" class="form-control" name="color_name" value="{{ color.name }}" placeholder="نام رنگ">
+                                <input type="color" name="color_hex_code" value="{{ color.hex_code }}" title="انتخاب رنگ">
+                            </div>
+                        {% endfor %}
+                        <div class="color-group mb-2">
+                            <input type="text" class="form-control" name="color_name" placeholder="نام رنگ">
+                            <input type="color" name="color_hex_code" value="#ffffff" title="انتخاب رنگ">
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary mt-2" onclick="addColor()">اضافه کردن رنگ</button>
+                </div>
+                <div class="form-group mb-3">
+                    <label>سایزها:</label>
+                    <div class="form-check mb-2">
+                        <input type="checkbox" class="form-check-input" name="update_sizes" id="update_sizes" {% if not product %}checked{% endif %}>
+                        <label class="form-check-label" for="update_sizes">به‌روزرسانی سایزها</label>
+                    </div>
+                    <div id="size-container">
+                        {% for size in sizes %}
+                            <div class="size-group mb-2">
+                                <input type="text" class="form-control" name="size_name" value="{{ size.name }}" placeholder="نام سایز">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="size_available" {% if size.available %}checked{% endif %}>
+                                    <label class="form-check-label">موجود</label>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="size-group mb-2">
+                            <input type="text" class="form-control" name="size_name" placeholder="نام سایز">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="size_available">
+                                <label class="form-check-label">موجود</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary mt-2" onclick="addSize()">اضافه کردن سایز</button>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">{% if product %}ویرایش محصول{% else %}ایجاد محصول{% endif %}</button>
+            </form>
+        </div>
+
+        <div class="list-section">
+            <h2 class="mb-4">لیست محصولات</h2>
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-header">
+                    <div>
+                        <strong>{{ product.name }}</strong>
+                        <div class="text-muted small mt-1">{{ product.created_at|date:"Y/m/d - H:i" }}</div>
+                    </div>
+                    <div>
+                        <span class="badge bg-primary">{{ product.brand }}</span>
+                    </div>
+                </div>
+                
+                <div class="product-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div><strong>قیمت:</strong> {{ product.price|floatformat:0 }} تومان</div>
+                        <div><strong>دسته:</strong> {{ product.category }}</div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <form method="post" class="d-inline-flex flex-grow-1">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="select">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <button type="submit" class="btn-action btn-outline flex-grow-1">
+                                <i class="fas fa-edit me-2"></i> ویرایش
+                            </button>
+                        </form>
+                        <form method="post" class="d-inline-flex flex-grow-1">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <button type="submit" class="btn-action btn-danger flex-grow-1" onclick="return confirm('آیا مطمئن هستید که می‌خواهید این محصول را حذف کنید؟')">
+                                <i class="fas fa-trash me-2"></i> حذف
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- نوار پایین صفحه -->
+    <div class="bottom-navbar">
+        <a href="{% url 'account:dashboard' %}" class="bottom-nav-item">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>داشبورد</span>
+        </a>
+        <a href="#" class="bottom-nav-item active">
+            <i class="fas fa-boxes"></i>
+            <span>محصولات</span>
+        </a>
+        <a href="{% url 'account:admin_user_management' %}" class="bottom-nav-item">
+            <i class="fas fa-users"></i>
+            <span>کاربران</span>
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function addColor() {
+            const container = document.getElementById('color-container');
+            const newColorGroup = document.createElement('div');
+            newColorGroup.className = 'color-group mb-2';
+            newColorGroup.innerHTML = `
+                <input type="text" class="form-control" name="color_name" placeholder="نام رنگ">
+                <input type="color" name="color_hex_code" value="#ffffff" title="انتخاب رنگ">
+            `;
+            container.appendChild(newColorGroup);
+        }
+
+        function addSize() {
+            const container = document.getElementById('size-container');
+            const newSizeGroup = document.createElement('div');
+            newSizeGroup.className = 'size-group mb-2';
+            newSizeGroup.innerHTML = `
+                <input type="text" class="form-control" name="size_name" placeholder="نام سایز">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="size_available">
+                    <label class="form-check-label">موجود</label>
+                </div>
+            `;
+            container.appendChild(newSizeGroup);
+        }
+
+        function resetForm() {
+            document.querySelector('form').reset();
+            document.querySelector('h2').textContent = 'اضافه کردن محصول جدید';
+            document.querySelector('input[name="action"]').value = 'create';
+            document.querySelector('input[name="product_id"]').remove();
+            document.getElementById('color-container').innerHTML = `
+                <div class="color-group mb-2">
+                    <input type="text" class="form-control" name="color_name" placeholder="نام رنگ">
+                    <input type="color" name="color_hex_code" value="#ffffff" title="انتخاب رنگ">
+                </div>
+            `;
+            document.getElementById('size-container').innerHTML = `
+                <div class="size-group mb-2">
+                    <input type="text" class="form-control" name="size_name" placeholder="نام سایز">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="size_available">
+                        <label class="form-check-label">موجود</label>
+                    </div>
+                </div>
+            `;
+            document.querySelector('button[type="submit"]').textContent = 'ایجاد محصول';
+        }
+
+        // ارسال فرم جستجو با اینتر
+        document.querySelector('.search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('searchForm').submit();
+            }
+        });
+        
+        // نمایش پیام‌ها
+        {% if messages %}
+        setTimeout(() => {
+            document.querySelector('.alert').style.display = 'none';
+        }, 5000);
+        {% endif %}
+    </script>
+</body>
+</html>

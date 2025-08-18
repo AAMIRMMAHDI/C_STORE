@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<title>ویرایش بخش درباره ما</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+<style>
+    body { font-family:'Vazirmatn', sans-serif; background:#f7f7f7; margin:0; padding:0; }
+    header { background:#ff6b00; color:white; padding:20px; text-align:center; font-size:24px; font-weight:bold; }
+    .container { max-width:600px; margin:30px auto; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
+    input[type=text], textarea { width:100%; padding:10px; margin:10px 0; border-radius:6px; border:1px solid #ddd; font-size:16px; }
+    input[type=checkbox] { margin-right:5px; }
+    button { background:#ff6b00; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold; }
+    button:hover { background:#ff954d; }
+    a { display:inline-block; margin-top:10px; color:#ff6b00; text-decoration:none; font-weight:bold; }
+    a:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+<header>✏️ ویرایش بخش درباره ما</header>
+<div class="container">
+<form method="post">
+{% csrf_token %}
+<p>عنوان:<input type="text" name="title" value="{{ section.title }}"></p>
+<p>محتوا:<textarea name="content">{{ section.content }}</textarea></p>
+<p>فعال:<input type="checkbox" name="is_active" {% if section.is_active %}checked{% endif %}></p>
+<button type="submit">ذخیره تغییرات</button>
+</form>
+<a href="{% url 'root:about_list' %}">⬅ بازگشت به لیست</a>
+</div>
+</body>
+</html>

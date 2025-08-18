@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block title %}استایل شاپ | فروشگاه آنلاین پوشاک{% endblock title %}
+
 {% block content %}
 <style>
     :root {
@@ -9,8 +10,11 @@
         --secondary: #794afa;
         --dark: #1e1e1e;
         --light: #f8f9fa;
-        --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --gray: #e0e0e0;
+        --shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
         --transition: all 0.3s ease;
+        --border-radius: 12px;
+        --font-family: 'Vazir', 'Arial', sans-serif;
     }
 
     * {
@@ -20,181 +24,523 @@
     }
 
     body {
-        font-family: 'Arial', sans-serif;
+        font-family: var(--font-family);
+        direction: rtl;
+        background: #f5f5f5;
     }
 
     .container {
-        max-width: 1200px;
+        max-width: 100%;
+        padding: 0 12px;
         margin: 0 auto;
-        padding: 0 20px;
-        direction: rtl;
     }
 
     section {
-        margin-bottom: 50px;
+        margin-bottom: 24px;
     }
 
-    /* Hero Section */
-    .hero-section {
-        background: url("https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80") no-repeat center/cover;
-        padding: 100px 20px;
-        text-align: center;
-        color: white;
-        position: relative;
-    }
-
-    .hero-section::before {
-        content: '';
-        position: absolute;
+    /* Navbar */
+    .navbar {
+        background: var(--primary);
+        padding: 12px;
+        position: sticky;
         top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.65);
+        z-index: 1000;
     }
 
-    .hero-section h1 {
-        font-size: clamp(2rem, 5vw, 2.5rem);
-        margin-bottom: 15px;
-        position: relative;
-        z-index: 1;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    .navbar-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1280px;
+        margin: 0 auto;
     }
 
-    .hero-section p {
-        font-size: clamp(1rem, 2.5vw, 1.2rem);
-        margin-bottom: 20px;
-        position: relative;
-        z-index: 1;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    .hamburger {
+        font-size: 1.6rem;
+        color: white;
+        cursor: pointer;
     }
 
-    .hero-section a {
-        display: inline-block;
-        padding: 12px 25px;
-        border-radius: 6px;
+    .nav-menu {
+        display: none;
+        position: absolute;
+        top: 60px;
+        right: 12px;
+        background: white;
+        width: 220px;
+        box-shadow: var(--shadow);
+        border-radius: 10px;
+        padding: 12px;
+    }
+
+    .nav-menu.active {
+        display: block;
+    }
+
+    .nav-menu a {
+        display: block;
+        padding: 12px;
+        color: var(--dark);
         text-decoration: none;
-        font-weight: 600;
-        margin: 5px;
+        font-size: 0.95rem;
         transition: var(--transition);
     }
 
-    .hero-section a:first-child {
-        background: var(--primary);
-        color: white;
+    .nav-menu a:hover {
+        background: var(--light);
+        border-radius: 8px;
     }
 
-    .hero-section a:first-child:hover {
+    /* Search Bar */
+    .search-bar {
+        margin: 12px 0;
+        padding: 0 12px;
+    }
+
+    .search-bar input {
+        width: 100%;
+        padding: 12px 20px;
+        border: 2px solid var(--gray);
+        border-radius: 25px;
+        font-size: 0.95rem;
+        background: white url('{% static "images/search-icon.png" %}') no-repeat 95% center;
+        background-size: 22px;
+        transition: var(--transition);
+    }
+
+    .search-bar input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+        outline: none;
+    }
+
+    /* Welcome Banner */
+    .welcome-banner {
+        background: linear-gradient(to right, var(--primary), #ff8a65);
+        padding: 24px;
+        border-radius: var(--border-radius);
+        text-align: center;
+        color: white;
+        box-shadow: var(--shadow);
+        margin: 12px 0;
+    }
+
+    .welcome-banner h1 {
+        font-size: clamp(1.6rem, 4vw, 1.8rem);
+        margin-bottom: 12px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .welcome-banner p {
+        font-size: clamp(0.95rem, 3vw, 1rem);
+        margin-bottom: 16px;
+    }
+
+    .welcome-banner a {
+        display: inline-block;
+        padding: 12px 28px;
+        border-radius: 25px;
+        background: white;
+        color: var(--dark);
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .welcome-banner a:hover {
+        background: var(--light);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+    }
+
+    /* Stories Section */
+    .stories-section {
+        margin: 24px 0;
+    }
+
+    .stories-grid {
+        display: flex;
+        overflow-x: auto;
+        gap: 16px;
+        padding: 12px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .story-card {
+        flex: 0 0 120px;
+        height: 180px;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        scroll-snap-align: center;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6));
+    }
+
+    .story-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .story-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.9;
+    }
+
+    .story-card .story-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 8px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    /* Story Modal */
+    .story-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .story-modal.active {
+        display: block;
+        opacity: 1;
+    }
+
+    .story-content {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+        height: 100vh;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+    }
+
+    .story-modal.active .story-content {
+        transform: translateY(0);
+    }
+
+    .story-content video,
+    .story-content img {
+        width: 100%;
+        height: auto;
+        max-height: 70vh;
+        object-fit: contain;
+        border-radius: var(--border-radius);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .story-progress {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .story-progress-bar {
+        height: 100%;
+        background: var(--primary);
+        width: 0;
+        transition: width linear;
+    }
+
+    .story-caption {
+        color: white;
+        font-size: 1rem;
+        text-align: center;
+        padding: 12px;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 8px;
+        margin-top: 12px;
+        max-width: 90%;
+    }
+
+    .story-product-link {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 10px 20px;
+        background: var(--primary);
+        color: white;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .story-product-link:hover {
         background: #ff5252;
     }
 
-    .hero-section a:last-child {
-        background: transparent;
-        border: 2px solid white;
-        color: white;
+    .story-nav {
+        position: absolute;
+        top: 50%;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        transform: translateY(-50%);
+        padding: 0 16px;
     }
 
-    .hero-section a:last-child:hover {
+    .story-nav button {
+        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        color: white;
+        font-size: 1.4rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .story-nav button:hover {
+        background: var(--primary);
+    }
+
+    .story-close {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .story-close:hover {
+        background: var(--primary);
+    }
+
+    /* Banner Ad 1 */
+    .banner-ad-1 {
+        background: linear-gradient(to right, #ff8a65, var(--primary));
+        padding: 24px;
+        border-radius: var(--border-radius);
+        text-align: center;
+        color: white;
+        box-shadow: var(--shadow);
+    }
+
+    .banner-ad-1 h2 {
+        font-size: 1.6rem;
+        margin-bottom: 12px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .banner-ad-1 p {
+        font-size: 0.95rem;
+        margin-bottom: 16px;
+    }
+
+    .banner-ad-1 a {
+        padding: 12px 24px;
         background: white;
         color: var(--dark);
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .banner-ad-1 a:hover {
+        background: var(--light);
+        transform: translateY(-2px);
     }
 
     /* Section Title */
     .section-title {
-        font-size: 1.8rem;
-        margin-bottom: 20px;
-        position: relative;
-        padding-bottom: 10px;
+        font-size: 1.5rem;
+        margin: 20px 0;
+        padding-right: 16px;
         color: var(--dark);
-        text-align: right;
+        position: relative;
     }
 
     .section-title::after {
         content: '';
         position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 50px;
+        bottom: -6px;
+        right: 16px;
+        width: 48px;
         height: 3px;
         background: var(--primary);
     }
 
     /* Products Grid */
     .products-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 25px;
+        display: flex;
+        overflow-x: auto;
+        gap: 16px;
+        padding: 12px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
     }
 
     .product-card {
+        flex: 0 0 180px;
         background: white;
-        border-radius: 8px;
+        border-radius: var(--border-radius);
         box-shadow: var(--shadow);
-        overflow: hidden;
         text-align: center;
-        transition: transform 0.3s ease;
+        scroll-snap-align: start;
+        transition: var(--transition);
+        position: relative;
     }
 
     .product-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     }
 
     .product-card img {
         width: 100%;
-        height: 220px;
+        height: 160px;
         object-fit: cover;
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
     }
 
     .product-badge {
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: 8px;
+        right: 8px;
         background: var(--primary);
         color: white;
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-size: 0.8rem;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 0.75rem;
     }
 
     .product-info {
-        padding: 15px;
+        padding: 12px;
     }
 
     .product-info h3 {
-        font-size: 1.2rem;
-        margin-bottom: 8px;
+        font-size: 0.95rem;
+        margin-bottom: 6px;
+        color: var(--dark);
     }
 
     .product-info p {
-        font-size: 0.9rem;
-        color: var(--dark);
-        margin-bottom: 8px;
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 6px;
     }
 
     .product-price {
-        font-size: 1.1rem;
+        font-size: 0.95rem;
         font-weight: 600;
         color: var(--primary);
     }
 
     .product-price del {
         color: #999;
-        font-size: 0.9rem;
-        margin-left: 8px;
+        font-size: 0.8rem;
+        margin-left: 6px;
     }
 
-    /* Collections Grid */
+    /* Banner Ad 2 (Newsletter) */
+    .banner-ad-2 {
+        background: linear-gradient(to right, var(--secondary), #5e35b1);
+        padding: 24px;
+        border-radius: var(--border-radius);
+        text-align: center;
+        color: white;
+        box-shadow: var(--shadow);
+    }
+
+    .banner-ad-2 h2 {
+        font-size: 1.6rem;
+        margin-bottom: 12px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .banner-ad-2 p {
+        font-size: 0.95rem;
+        margin-bottom: 16px;
+    }
+
+    .banner-ad-2 form {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .banner-ad-2 input {
+        padding: 12px;
+        border: none;
+        border-radius: 25px;
+        font-size: 0.95rem;
+        width: 220px;
+    }
+
+    .banner-ad-2 button {
+        padding: 12px 24px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .banner-ad-2 button:hover {
+        background: #ff5252;
+        transform: translateY(-2px);
+    }
+
+    /* Collections */
     .collections-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 25px;
+        display: flex;
+        overflow-x: auto;
+        gap: 16px;
+        padding: 12px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
     }
 
     .collection-card {
+        flex: 0 0 220px;
         position: relative;
-        height: 280px;
-        border-radius: 8px;
+        height: 200px;
+        border-radius: var(--border-radius);
         overflow: hidden;
+        scroll-snap-align: start;
     }
 
     .collection-card img {
@@ -209,14 +555,14 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.7);
+        background: rgba(0, 0, 0, 0.6);
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         color: white;
-        opacity: 0.3;
-        transition: opacity 0.3s ease;
+        opacity: 0.8;
+        transition: var(--transition);
     }
 
     .collection-card:hover .collection-overlay {
@@ -224,18 +570,17 @@
     }
 
     .collection-overlay h3 {
-        font-size: 1.4rem;
-        margin-bottom: 15px;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        font-size: 1.1rem;
+        margin-bottom: 12px;
     }
 
     .collection-overlay a {
         padding: 10px 20px;
         background: var(--primary);
         color: white;
+        border-radius: 25px;
+        font-size: 0.85rem;
         text-decoration: none;
-        border-radius: 5px;
-        font-size: 0.9rem;
         transition: var(--transition);
     }
 
@@ -247,192 +592,211 @@
     .promo-banner {
         background: linear-gradient(to right, var(--primary), var(--secondary));
         color: white;
-        padding: 40px 20px;
-        border-radius: 10px;
-        margin: 40px 0;
+        padding: 24px;
+        border-radius: var(--border-radius);
         text-align: center;
-    }
-
-    .promo-content {
-        max-width: 600px;
-        margin: 0 auto;
+        box-shadow: var(--shadow);
     }
 
     .promo-title {
-        font-size: 2rem;
-        margin-bottom: 15px;
+        font-size: 1.6rem;
+        margin-bottom: 12px;
         text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
     }
 
     .promo-text {
-        font-size: 1.1rem;
-        margin-bottom: 20px;
+        font-size: 0.95rem;
+        margin-bottom: 16px;
     }
 
     .timer {
         display: flex;
         justify-content: center;
         gap: 10px;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
     }
 
     .timer-item {
-        background: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.2);
         padding: 8px 12px;
-        border-radius: 5px;
-        min-width: 50px;
-        text-align: center;
+        border-radius: 6px;
+        min-width: 48px;
     }
 
     .timer-number {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         font-weight: 600;
     }
 
     .timer-text {
         font-size: 0.7rem;
-        opacity: 0.9;
     }
 
     .btn {
-        padding: 12px 25px;
+        padding: 12px 24px;
         background: var(--primary);
         color: white;
+        border-radius: 25px;
+        font-size: 0.95rem;
         text-decoration: none;
-        border-radius: 5px;
-        font-weight: 600;
-        font-size: 1rem;
         transition: var(--transition);
     }
 
     .btn:hover {
         background: #ff5252;
+        transform: translateY(-2px);
     }
 
     /* About Section */
     .about-section {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 40px;
-        align-items: center;
-    }
-
-    .about-img {
-        border-radius: 10px;
-        overflow: hidden;
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 24px;
         box-shadow: var(--shadow);
     }
 
     .about-img img {
         width: 100%;
         height: auto;
-        display: block;
+        border-radius: var(--border-radius);
+        margin-bottom: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     .about-content h2 {
-        font-size: 1.8rem;
-        margin-bottom: 15px;
+        font-size: 1.5rem;
         color: var(--primary);
+        margin-bottom: 12px;
+        text-align: center;
     }
 
     .about-content p {
-        font-size: 1rem;
+        font-size: 0.95rem;
         color: #555;
-        line-height: 1.6;
-        margin-bottom: 15px;
+        line-height: 1.7;
+        text-align: center;
+        margin-bottom: 16px;
     }
 
     .features-list {
-        margin-top: 20px;
+        display: flex;
+        overflow-x: auto;
+        gap: 16px;
+        padding: 12px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
     }
 
     .feature-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 15px;
+        flex: 0 0 180px;
+        background: var(--light);
+        border-radius: var(--border-radius);
+        padding: 16px;
+        text-align: center;
+        scroll-snap-align: start;
+        transition: var(--transition);
+    }
+
+    .feature-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
     }
 
     .feature-icon {
-        background: var(--primary);
+        background: linear-gradient(to right, var(--primary), #ff8a65);
         color: white;
-        width: 40px;
-        height: 40px;
+        width: 56px;
+        height: 56px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-left: 10px;
-        flex-shrink: 0;
+        margin: 0 auto 12px;
     }
 
     .feature-text h3 {
         font-size: 1.1rem;
-        margin-bottom: 5px;
+        margin-bottom: 6px;
+        color: var(--dark);
     }
 
     .feature-text p {
-        font-size: 0.9rem;
-        color: #555;
+        font-size: 0.85rem;
+        color: #666;
     }
 
     /* Contact Section */
     .contact-section {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 40px;
-    }
-
-    .contact-info {
         background: white;
-        border-radius: 10px;
-        padding: 30px;
+        border-radius: var(--border-radius);
+        padding: 24px;
         box-shadow: var(--shadow);
     }
 
-    .contact-info h2 {
-        font-size: 1.8rem;
-        margin-bottom: 20px;
+    .contact-info h2, .contact-form h2 {
+        font-size: 1.5rem;
         color: var(--primary);
+        margin-bottom: 16px;
+        text-align: center;
+    }
+
+    .info-list {
+        display: flex;
+        overflow-x: auto;
+        gap: 16px;
+        padding: 12px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
     }
 
     .info-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 20px;
+        flex: 0 0 180px;
+        background: var(--light);
+        border-radius: var(--border-radius);
+        padding: 16px;
+        text-align: center;
+        scroll-snap-align: start;
+        transition: var(--transition);
+    }
+
+    .info-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
     }
 
     .info-icon {
-        background: var(--primary);
+        background: linear-gradient(to right, var(--primary), #ff8a65);
         color: white;
-        width: 40px;
-        height: 40px;
+        width: 56px;
+        height: 56px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-left: 10px;
-        flex-shrink: 0;
+        margin: 0 auto 12px;
     }
 
     .info-text h3 {
         font-size: 1.1rem;
-        margin-bottom: 5px;
+        margin-bottom: 6px;
+        color: var(--dark);
     }
 
     .info-text p {
-        font-size: 0.9rem;
-        color: #555;
+        font-size: 0.85rem;
+        color: #666;
     }
 
     .social-links {
         display: flex;
-        gap: 10px;
-        margin-top: 20px;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 16px;
     }
 
     .social-links a {
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
         background: var(--light);
         border-radius: 50%;
         display: flex;
@@ -445,172 +809,314 @@
     .social-links a:hover {
         background: var(--primary);
         color: white;
-        transform: translateY(-3px);
+        transform: scale(1.1);
     }
 
     .contact-form {
-        background: white;
-        border-radius: 10px;
-        padding: 30px;
-        box-shadow: var(--shadow);
-    }
-
-    .contact-form h2 {
-        font-size: 1.8rem;
-        margin-bottom: 20px;
-        color: var(--primary);
+        margin-top: 24px;
     }
 
     .form-group {
-        margin-bottom: 15px;
+        margin-bottom: 16px;
     }
 
     .form-group label {
-        display: block;
-        margin-bottom: 5px;
+        font-size: 0.95rem;
         font-weight: 600;
-        font-size: 0.9rem;
+        margin-bottom: 6px;
+        display: block;
+        color: var(--dark);
     }
 
-    .form-group input,
-    .form-group textarea {
+    .form-group input, .form-group textarea {
         width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-size: 0.9rem;
+        padding: 12px;
+        border: 2px solid var(--gray);
+        border-radius: 25px;
+        font-size: 0.95rem;
         transition: var(--transition);
     }
 
-    .form-group textarea {
-        height: 120px;
-        resize: vertical;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus {
+    .form-group input:focus, .form-group textarea:focus {
         border-color: var(--primary);
         box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
         outline: none;
     }
 
+    .form-group textarea {
+        height: 140px;
+        border-radius: var(--border-radius);
+    }
+
     .contact-form button {
         width: 100%;
-        padding: 12px;
-        background: var(--primary);
+        padding: 14px;
+        background: linear-gradient(to right, var(--primary), #ff8a65);
         color: white;
         border: none;
-        border-radius: 5px;
-        font-weight: 600;
+        border-radius: 25px;
         font-size: 1rem;
+        font-weight: 600;
         cursor: pointer;
         transition: var(--transition);
     }
 
     .contact-form button:hover {
-        background: #ff5252;
+        background: linear-gradient(to right, #ff5252, #ff7043);
+        transform: translateY(-2px);
     }
 
     /* Responsive Design */
-    @media (max-width: 992px) {
-        .about-section,
-        .contact-section {
-            grid-template-columns: 1fr;
+    @media (min-width: 768px) {
+        .container {
+            max-width: 1280px;
         }
 
-        .hero-section {
-            padding: 80px 15px;
+        .navbar-container {
+            padding: 0 24px;
         }
 
-        .hero-section h1 {
-            font-size: 2rem;
+        .nav-menu {
+            display: flex !important;
+            position: static;
+            width: auto;
+            background: none;
+            box-shadow: none;
+            padding: 0;
         }
 
-        .hero-section p {
-            font-size: 1.1rem;
+        .nav-menu a {
+            padding: 0 16px;
         }
 
-        .products-grid {
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        .hamburger {
+            display: none;
         }
 
-        .collections-grid {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        .welcome-banner {
+            padding: 32px;
+        }
+
+        .stories-grid {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .story-card {
+            flex: 0 0 140px;
+            height: 220px;
+        }
+
+        .products-grid, .collections-grid, .features-list, .info-list {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 24px;
+        }
+
+        .product-card, .feature-item, .info-item {
+            flex: 0 0 220px;
+        }
+
+        .collection-card {
+            flex: 0 0 280px;
+            height: 240px;
+        }
+
+        .banner-ad-2 form {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .about-section, .contact-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .about-section, .contact-section {
+            padding: 32px;
+        }
+
+        .about-img img {
+            margin-bottom: 0;
+        }
+
+        .about-content h2, .contact-info h2, .contact-form h2 {
+            text-align: right;
+        }
+
+        .about-content p {
+            text-align: right;
+        }
+
+        .story-content {
+            max-width: 600px;
         }
     }
 
-    @media (max-width: 767px) {
+    @media (max-width: 576px) {
         .container {
-            padding: 0 10px;
+            padding: 0 8px;
         }
 
-        .hero-section {
-            padding: 50px 10px;
+        .welcome-banner h1 {
+            font-size: 1.4rem;
         }
 
-        .hero-section h1 {
-            font-size: 1.6rem;
-        }
-
-        .hero-section p {
+        .welcome-banner p {
             font-size: 0.9rem;
+        }
+
+        .welcome-banner a {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+
+        .stories-grid {
+            gap: 12px;
+            padding: 8px;
+        }
+
+        .story-card {
+            flex: 0 0 100px;
+            height: 160px;
+        }
+
+        .product-card {
+            flex: 0 0 160px;
+        }
+
+        .product-card img {
+            height: 140px;
+        }
+
+        .product-info h3 {
+            font-size: 0.9rem;
+        }
+
+        .product-price {
+            font-size: 0.9rem;
+        }
+
+        .collection-card {
+            flex: 0 0 200px;
+            height: 180px;
+        }
+
+        .banner-ad-1 h2, .banner-ad-2 h2, .promo-title {
+            font-size: 1.4rem;
+        }
+
+        .banner-ad-1 p, .banner-ad-2 p, .promo-text {
+            font-size: 0.9rem;
+        }
+
+        .banner-ad-2 input {
+            width: 180px;
         }
 
         .section-title {
             font-size: 1.4rem;
         }
 
-        .products-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .product-card img {
-            height: 200px;
-        }
-
-        .collections-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .collection-card {
-            height: 220px;
-        }
-
-        .promo-title {
-            font-size: 1.5rem;
-        }
-
-        .promo-text {
-            font-size: 0.9rem;
-        }
-
-        .timer {
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
         .timer-item {
-            min-width: 45px;
-            padding: 6px 10px;
+            min-width: 40px;
         }
 
         .timer-number {
             font-size: 1rem;
         }
 
-        .timer-text {
-            font-size: 0.6rem;
+        .about-content h2, .contact-info h2, .contact-form h2 {
+            font-size: 1.4rem;
+        }
+
+        .feature-item, .info-item {
+            flex: 0 0 160px;
+        }
+
+        .story-content video,
+        .story-content img {
+            max-height: 60vh;
+        }
+
+        .story-caption {
+            font-size: 0.9rem;
+            padding: 12px;
+        }
+
+        .story-nav button {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+
+        .story-close {
+            width: 36px;
+            height: 36px;
+            font-size: 1rem;
         }
     }
 </style>
 
 <div class="container">
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <h1>کالکشن جدید پاییزه ۱۴۰۴</h1>
-        <p>جدیدترین طرح‌های ما با بهترین پارچه‌ها و دوخت حرفه‌ای</p>
+
+
+    <!-- Search Bar -->
+    <section class="search-bar">
+        <form action="{% url 'products:product_list' %}" method="get">
+            <input type="text" name="q" placeholder="جستجوی محصولات...">
+        </form>
+    </section>
+
+    <!-- Welcome Banner -->
+    <section class="welcome-banner">
+        <h1>به استایل شاپ خوش آمدید</h1>
+        <p>جدیدترین طرح‌های پاییزه ۱۴۰۴ با بهترین کیفیت</p>
         <a href="{% url 'products:product_list' %}">مشاهده محصولات</a>
-        <a href="{% url 'products:product_list' %}">خرید آنلاین</a>
+    </section>
+
+    <!-- Stories Section -->
+    <section class="stories-section">
+        <h2 class="section-title">استوری‌های ویژه</h2>
+        <div class="stories-grid">
+            {% for story in stories %}
+                <div class="story-card" data-story-id="{{ story.id }}" onclick="showStory({{ forloop.counter0 }})">
+                    {% if story.thumbnail %}
+                        <img src="{{ story.thumbnail.url }}" alt="{{ story.title }}">
+                    {% elif story.file.url|lower|slice:'-3:' == 'mp4' %}
+                        <img src="{% static 'images/video-thumbnail-placeholder.jpg' %}" alt="{{ story.title }}">
+                    {% else %}
+                        <img src="{{ story.file.url }}" alt="{{ story.title }}">
+                    {% endif %}
+                    <div class="story-overlay">{{ story.title|truncatechars:15 }}</div>
+                </div>
+            {% empty %}
+                <p>استوری‌ای برای نمایش وجود ندارد.</p>
+            {% endfor %}
+        </div>
+        <div class="story-modal" id="story-modal">
+            <div class="story-content" id="story-content">
+                <!-- Story content will be dynamically inserted here -->
+                <div class="story-progress">
+                    <div class="story-progress-bar" id="story-progress-bar"></div>
+                </div>
+            </div>
+            <div class="story-nav">
+                <button class="story-prev" onclick="prevStory()"><i class="fas fa-chevron-right"></i></button>
+                <button class="story-next" onclick="nextStory()"><i class="fas fa-chevron-left"></i></button>
+            </div>
+            <button class="story-close" onclick="closeStory()"><i class="fas fa-times"></i></button>
+        </div>
+    </section>
+
+    <!-- Banner Ad 1 (Special Offer) -->
+    <section class="section">
+        <div class="banner-ad-1">
+            <h2>تخفیفات ویژه پاییزه</h2>
+            <p>تا ۴۰٪ تخفیف برای خریدهای بالای ۵۰۰,۰۰۰ تومان</p>
+            <a href="{% url 'products:product_list' %}">همین حالا خرید کنید</a>
+        </div>
     </section>
 
     <!-- Featured Products -->
@@ -628,16 +1134,18 @@
                         {% if image.is_main %}
                             <img src="{{ image.image.url }}" alt="{{ product.name }}">
                         {% endif %}
+                    {% empty %}
+                        <img src="{% static 'images/product-placeholder.jpg' %}" alt="{{ product.name }}">
                     {% endfor %}
                     <div class="product-info">
                         <h3>{{ product.category }}</h3>
-                        <p>{{ product.name }}</p>
+                        <p>{{ product.name|truncatechars:20 }}</p>
                         <div class="product-price">
                             {% if product.discount_price %}
-                                <del>{{ product.price }} تومان</del>
-                                {{ product.discount_price }} تومان
+                                <del>{{ product.price|floatformat:"0" }} تومان</del>
+                                {{ product.discount_price|floatformat:"0" }} تومان
                             {% else %}
-                                {{ product.price }} تومان
+                                {{ product.price|floatformat:"0" }} تومان
                             {% endif %}
                         </div>
                     </div>
@@ -648,29 +1156,42 @@
         </div>
     </section>
 
+    <!-- Banner Ad 2 (Newsletter Signup) -->
+    <section class="section">
+        <div class="banner-ad-2">
+            <h2>عضو خبرنامه ما شوید</h2>
+            <p>از جدیدترین تخفیف‌ها و محصولات با خبر شوید!</p>
+            <form method="post" action="">
+                {% csrf_token %}
+                <input type="email" name="email" placeholder="ایمیل خود را وارد کنید" required>
+                <button type="submit">عضویت</button>
+            </form>
+        </div>
+    </section>
+
     <!-- Collections -->
     <section class="collections-section">
         <h2 class="section-title">کالکشن‌های ویژه</h2>
         <div class="collections-grid">
             <div class="collection-card">
-                <img src="https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="کالکشن مردانه">
+                <img src="https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="کالکشن مردانه">
                 <div class="collection-overlay">
                     <h3>کالکشن مردانه</h3>
-                    <a href="{% url 'products:product_list' %}">مشاهده محصولات</a>
+                    <a href="{% url 'products:product_list' %}?category=men">مشاهده محصولات</a>
                 </div>
             </div>
             <div class="collection-card">
-                <img src="https://images.unsplash.com/photo-1520006403909-838d6b92c22e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="کالکشن زنانه">
+                <img src="https://images.unsplash.com/photo-1520006403909-838d6b92c22e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="کالکشن زنانه">
                 <div class="collection-overlay">
                     <h3>کالکشن زنانه</h3>
-                    <a href="{% url 'products:product_list' %}">مشاهده محصولات</a>
+                    <a href="{% url 'products:product_list' %}?category=women">مشاهده محصولات</a>
                 </div>
             </div>
             <div class="collection-card">
-                <img src="https://images.unsplash.com/photo-1551232864-3f0890e580d9?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="کالکشن بچگانه">
+                <img src="https://images.unsplash.com/photo-1551232864-3f0890e580d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=634&q=80" alt="کالکشن بچگانه">
                 <div class="collection-overlay">
                     <h3>کالکشن بچگانه</h3>
-                    <a href="{% url 'products:product_list' %}">مشاهده محصولات</a>
+                    <a href="{% url 'products:product_list' %}?category=kids">مشاهده محصولات</a>
                 </div>
             </div>
         </div>
@@ -679,29 +1200,27 @@
     <!-- Promo Banner -->
     <section class="section">
         <div class="promo-banner">
-            <div class="promo-content">
-                <h2 class="promo-title">حراج ویژه فصل</h2>
-                <p class="promo-text">تا ۵۰٪ تخفیف برای کالکشن تابستانه</p>
-                <div class="timer">
-                    <div class="timer-item">
-                        <div class="timer-number" id="days">۰۳</div>
-                        <div class="timer-text">روز</div>
-                    </div>
-                    <div class="timer-item">
-                        <div class="timer-number" id="hours">۱۲</div>
-                        <div class="timer-text">ساعت</div>
-                    </div>
-                    <div class="timer-item">
-                        <div class="timer-number" id="minutes">۴۵</div>
-                        <div class="timer-text">دقیقه</div>
-                    </div>
-                    <div class="timer-item">
-                        <div class="timer-number" id="seconds">۳۰</div>
-                        <div class="timer-text">ثانیه</div>
-                    </div>
+            <h2 class="promo-title">حراج ویژه فصل</h2>
+            <p class="promo-text">تا ۵۰٪ تخفیف برای کالکشن تابستانه</p>
+            <div class="timer">
+                <div class="timer-item">
+                    <div class="timer-number" id="days">00</div>
+                    <div class="timer-text">روز</div>
                 </div>
-                <a href="#collections" class="btn">همین حالا خرید کنید</a>
+                <div class="timer-item">
+                    <div class="timer-number" id="hours">00</div>
+                    <div class="timer-text">ساعت</div>
+                </div>
+                <div class="timer-item">
+                    <div class="timer-number" id="minutes">00</div>
+                    <div class="timer-text">دقیقه</div>
+                </div>
+                <div class="timer-item">
+                    <div class="timer-number" id="seconds">00</div>
+                    <div class="timer-text">ثانیه</div>
+                </div>
             </div>
+            <a href="{% url 'products:product_list' %}?sale=true" class="btn">همین حالا خرید کنید</a>
         </div>
     </section>
 
@@ -710,11 +1229,11 @@
         <h2 class="section-title">درباره ما</h2>
         <div class="about-section">
             <div class="about-img">
-                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="درباره ما">
+                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="درباره ما">
             </div>
             <div class="about-content">
                 <h2>داستان ما</h2>
-                <p>استایل شاپ در سال ۱۳۹۵ با هدف ارائه پوشاک باکیفیت تأسیس شد. ما به دنبال ارائه بهترین استایل با قیمت مناسب هستیم.</p>
+                <p>استایل شاپ در سال ۱۳۹۵ با هدف ارائه پوشاک باکیفیت و استایل‌های مدرن تأسیس شد. ما به دنبال خلق تجربه‌ای متفاوت برای مشتریان هستیم.</p>
                 <div class="features-list">
                     <div class="feature-item">
                         <div class="feature-icon">
@@ -754,68 +1273,278 @@
         <div class="contact-section">
             <div class="contact-info">
                 <h2>اطلاعات تماس</h2>
-                <div class="info-item">
-                    <div class="info-icon">
-                        <i class="fas fa-map-marker-alt"></i>
+                <div class="info-list">
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="info-text">
+                            <h3>آدرس</h3>
+                            <p>تهران، خیابان ولیعصر، پلاک ۱۲۳۴</p>
+                        </div>
                     </div>
-                    <div class="info-text">
-                        <h3>آدرس</h3>
-                        <p>تهران، خیابان ولیعصر، پلاک ۱۲۳۴</p>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="info-text">
+                            <h3>تلفن</h3>
+                            <p>۰۲۱-۱۲۳۴۵۶۷۸</p>
+                        </div>
                     </div>
-                </div>
-                <div class="info-item">
-                    <div class="info-icon">
-                        <i class="fas fa-phone"></i>
-                    </div>
-                    <div class="info-text">
-                        <h3>تلفن</h3>
-                        <p>۰۲۱-۱۲۳۴۵۶۷۸</p>
-                    </div>
-                </div>
-                <div class="info-item">
-                    <div class="info-icon">
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                    <div class="info-text">
-                        <h3>ایمیل</h3>
-                        <p>info@styleshop.ir</p>
-                    </div>
-                </div>
-                <div class="info-item">
-                    <div class="info-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="info-text">
-                        <h3>ساعات کاری</h3>
-                        <p>شنبه تا چهارشنبه: ۹ صبح تا ۸ شب<br>پنجشنبه: ۹ صبح تا ۴ بعدازظهر</p>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="info-text">
+                            <h3>ایمیل</h3>
+                            <p>info@styleshop.ir</p>
+                        </div>
                     </div>
                 </div>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-instagram"></i></a>
                     <a href="#"><i class="fab fa-telegram"></i></a>
                     <a href="#"><i class="fab fa-whatsapp"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
                 </div>
             </div>
             <div class="contact-form">
                 <h2>ارسال پیام</h2>
-                <form>
+                <form method="post" action="{% url 'root:contact' %}">
+                    {% csrf_token %}
                     <div class="form-group">
-                        <label for="name">نام</label>
-                        <input type="text" id="name" required>
+                        <label for="name">نام و نام خانوادگی</label>
+                        <input type="text" id="name" name="name" required>
                     </div>
                     <div class="form-group">
                         <label for="email">ایمیل</label>
-                        <input type="email" id="email" required>
+                        <input type="email" id="email" name="email" required>
                     </div>
                     <div class="form-group">
                         <label for="message">پیام شما</label>
-                        <textarea id="message" required></textarea>
+                        <textarea id="message" name="message" required></textarea>
                     </div>
-                    <button type="submit" class="btn">ارسال</button>
+                    <button type="submit" class="btn">ارسال پیام</button>
                 </form>
             </div>
         </div>
     </section>
 </div>
+
+<script>
+    // Global variables
+    let currentStory = 0;
+    let stories = [];
+    let progressInterval;
+    
+    // Mock data for stories (replace with actual data from backend)
+    stories = [
+        {% for story in stories %}
+        {
+            id: {{ story.id }},
+            title: "{{ story.title }}",
+            type: "{{ story.file.url|lower|slice:'-3:' }}",
+            src: "{{ story.file.url }}",
+            caption: "{{ story.caption }}",
+            product_url: "{% if story.product %}{% url 'products:product_detail' story.product.id %}{% endif %}",
+            thumbnail: "{% if story.thumbnail %}{{ story.thumbnail.url }}{% endif %}"
+        },
+        {% endfor %}
+    ];
+
+    // Function to show story
+    function showStory(index, autoPlay = true) {
+        const story = stories[index];
+        if (!story) return;
+
+        // Close any existing story
+        closeStory();
+        
+        // Set content based on story type
+        const content = `
+            <div class="story-progress">
+                <div class="story-progress-bar" id="story-progress-bar"></div>
+            </div>
+            ${story.type === 'mp4' ? 
+                `<video src="${story.src}" autoplay muted></video>` :
+                `<img src="${story.src}" alt="${story.title}">`
+            }
+            <div class="story-caption">${story.caption}</div>
+            ${story.product_url ? `<a href="${story.product_url}" class="story-product-link">مشاهده محصول</a>` : ''}
+        `;
+        
+        document.getElementById('story-content').innerHTML = content;
+        document.getElementById('story-modal').classList.add('active');
+        currentStory = index;
+
+        // Handle video ended event
+        if (story.type === 'mp4') {
+            const video = document.querySelector('#story-content video');
+            if (video) {
+                video.addEventListener('ended', function() {
+                    nextStory();
+                });
+                
+                // Start playing the video
+                video.play().catch(e => console.error('Video play error:', e));
+            }
+        }
+
+        // Start progress bar
+        startProgressBar(autoPlay);
+    }
+
+    // Function to start progress bar
+    function startProgressBar(autoPlay) {
+        clearInterval(progressInterval);
+        const progressBar = document.getElementById('story-progress-bar');
+        if (!progressBar) return;
+        
+        progressBar.style.width = '0%';
+        let progress = 0;
+        const duration = 5000; // 5 seconds for all stories
+        
+        if (autoPlay) {
+            progressInterval = setInterval(() => {
+                progress += 100 / (duration / 50);
+                progressBar.style.width = `${progress}%`;
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    nextStory();
+                }
+            }, 50);
+        }
+    }
+
+    // Navigation functions
+    function nextStory() {
+        let newIndex = (currentStory + 1) % stories.length;
+        showStory(newIndex);
+    }
+
+    function prevStory() {
+        let newIndex = currentStory - 1;
+        if (newIndex < 0) newIndex = stories.length - 1;
+        showStory(newIndex, false);
+    }
+
+    function closeStory() {
+        clearInterval(progressInterval);
+        const modal = document.getElementById('story-modal');
+        if (modal) modal.classList.remove('active');
+        
+        // Pause any playing video
+        const video = document.querySelector('#story-content video');
+        if (video) video.pause();
+    }
+
+    // Hamburger menu toggle
+    function toggleMenu() {
+        const menu = document.getElementById('nav-menu');
+        if (menu) menu.classList.toggle('active');
+    }
+
+    // Countdown timer
+    function startTimer() {
+        const countdownDate = new Date().getTime() + (3 * 24 * 60 * 60 * 1000); // 3 days from now
+        const timer = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+
+            if (distance < 0) {
+                clearInterval(timer);
+                document.querySelector('.timer').innerHTML = 'حراج به پایان رسید!';
+            }
+        }, 1000);
+    }
+
+    // Generate video thumbnails
+    function generateVideoThumbnails() {
+        document.querySelectorAll('.story-card').forEach(async (card, index) => {
+            const story = stories[index];
+            if (!story || story.type !== 'mp4') return;
+
+            // If thumbnail already exists, use it
+            if (story.thumbnail) {
+                card.querySelector('img').src = story.thumbnail;
+                return;
+            }
+
+            // Create video element to capture thumbnail
+            const video = document.createElement('video');
+            video.src = story.src;
+            video.crossOrigin = 'anonymous';
+            
+            // Wait for video metadata to load
+            video.addEventListener('loadedmetadata', function() {
+                // Seek to a specific time (e.g., 1 second)
+                video.currentTime = 1;
+            });
+            
+            // When video seeks to the desired time
+            video.addEventListener('seeked', function() {
+                // Create canvas to capture the frame
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                // Convert canvas to image and set as thumbnail
+                const thumbnailUrl = canvas.toDataURL('image/jpeg');
+                card.querySelector('img').src = thumbnailUrl;
+                
+                // Optional: Send thumbnail to server to save
+                // saveThumbnailToServer(story.id, thumbnailUrl);
+            });
+            
+            // Handle errors
+            video.addEventListener('error', function() {
+                console.error('Error loading video for thumbnail generation');
+                card.querySelector('img').src = "{% static 'images/video-thumbnail-placeholder.jpg' %}";
+            });
+        });
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        startTimer();
+        generateVideoThumbnails();
+        
+        // Add event listeners for swipe gestures
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        const storyModal = document.getElementById('story-modal');
+        if (storyModal) {
+            storyModal.addEventListener('touchstart', e => {
+                touchStartY = e.changedTouches[0].screenY;
+            });
+
+            storyModal.addEventListener('touchend', e => {
+                touchEndY = e.changedTouches[0].screenY;
+                handleSwipe();
+            });
+        }
+
+        function handleSwipe() {
+            const swipeDistance = touchStartY - touchEndY;
+            if (swipeDistance > 50) { // Swipe up
+                nextStory();
+            } else if (swipeDistance < -50) { // Swipe down
+                prevStory();
+            }
+        }
+    });
+</script>
 {% endblock content %}

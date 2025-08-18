@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت سفارشات | فروشگاه اینترنتی</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --secondary-color: #f8fafc;
+            --success-color: #10b981;
+            --info-color: #06b6d4;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-color: #f8fafc;
+            --dark-color: #1e293b;
+        }
+        
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f8f9fc;
+            color: #333;
+            padding-bottom: 80px; /* فضای منوی پایین */
+        }
+        
+        /* نوار پایین صفحه */
+        .bottom-navbar {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            height: 60px;
+            background-color: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.75rem;
+            padding: 8px;
+            transition: all 0.2s;
+        }
+        
+        .bottom-nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+        
+        .bottom-nav-item.active {
+            color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+        
+        .bottom-nav-item:hover {
+            color: var(--primary-color);
+        }
+        
+        /* محتوا */
+        .main-content {
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        /* کارت سفارشات */
+        .order-card {
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        
+        .order-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .order-header {
+            padding: 15px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8fafc;
+        }
+        
+        .order-body {
+            padding: 15px;
+        }
+        
+        .order-item {
+            display: flex;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .order-item-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-left: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .order-item-info {
+            flex: 1;
+        }
+        
+        .order-item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #1e293b;
+        }
+        
+        .order-item-meta {
+            font-size: 0.75rem;
+            color: #64748b;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .order-item-meta span {
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .order-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-processing {
+            background-color: #e0e7ff;
+            color: #3730a3;
+        }
+        
+        .status-shipped {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-delivered {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-canceled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        /* جستجو */
+        .search-container {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 15px 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            padding-right: 45px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .search-button {
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* فیلترها */
+        .filter-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .filter-item {
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: #f1f5f9;
+            color: #64748b;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-item.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        /* دکمه‌ها */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+        }
+        
+        /* صفحه‌بندی */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+        
+        .page-item {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: #f1f5f9;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .page-item.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        /* حالت دسکتاپ */
+        @media (min-width: 992px) {
+            .bottom-navbar {
+                display: none;
+            }
+            
+            body {
+                padding-bottom: 0;
+            }
+            
+            .main-content {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 30px;
+            }
+            
+            .search-container {
+                position: static;
+                padding: 20px 0;
+                box-shadow: none;
+            }
+            
+            .search-box {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+            
+            .filter-container {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- جستجو -->
+    <div class="search-container">
+        <div class="search-box">
+            <form id="searchForm" method="get">
+                <input type="text" class="search-input" name="search" placeholder="جستجوی شماره سفارش یا نام مشتری..." value="{{ request.GET.search }}">
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+        
+        <!-- فیلترها -->
+        <div class="filter-container">
+            <div class="filter-item {% if not request.GET.status %}active{% endif %}" data-status="">همه سفارشات</div>
+            <div class="filter-item {% if request.GET.status == 'PENDING' %}active{% endif %}" data-status="PENDING">در انتظار پرداخت</div>
+            <div class="filter-item {% if request.GET.status == 'PROCESSING' %}active{% endif %}" data-status="PROCESSING">در حال پردازش</div>
+            <div class="filter-item {% if request.GET.status == 'SHIPPED' %}active{% endif %}" data-status="SHIPPED">ارسال شده</div>
+            <div class="filter-item {% if request.GET.status == 'DELIVERED' %}active{% endif %}" data-status="DELIVERED">تحویل شده</div>
+            <div class="filter-item {% if request.GET.status == 'CANCELED' %}active{% endif %}" data-status="CANCELED">لغو شده</div>
+        </div>
+    </div>
+    
+    <!-- محتوای اصلی -->
+    <div class="main-content">
+        {% if messages %}
+            <div class="alert alert-info">
+                {% for message in messages %}
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <div>{{ message }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <!-- لیست سفارشات -->
+        {% for order in orders %}
+        <div class="order-card">
+            <div class="order-header">
+                <div>
+                    <strong>سفارش #{{ order.order_number }}</strong>
+                    <div class="text-muted small mt-1">{{ order.created_at|date:"Y/m/d - H:i" }}</div>
+                </div>
+                <div>
+                    <span class="order-status status-{{ order.status|lower }}">{{ order.get_status_display }}</span>
+                </div>
+            </div>
+            
+            <div class="order-body">
+                <!-- محصولات -->
+                {% for item in order.orderitems.all|slice:":3" %}
+                <div class="order-item">
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="order-item-img">
+                    <div class="order-item-info">
+                        <div class="order-item-name">{{ item.product.name }}</div>
+                        <div class="order-item-meta">
+                            <span>{{ item.quantity }} عدد</span>
+                            <span>{{ item.price|floatformat:0 }} تومان</span>
+                            {% if item.color %}<span>{{ item.color.name }}</span>{% endif %}
+                            {% if item.size %}<span>{{ item.size.name }}</span>{% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                {% if order.orderitems.count > 3 %}
+                <div class="text-center text-primary mt-2">
+                    +{{ order.orderitems.count|add:"-3" }} محصول دیگر
+                </div>
+                {% endif %}
+                
+                <!-- اطلاعات مشتری -->
+                <div class="mt-3 pt-3 border-top">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ order.user.get_full_name|default:order.user.username }}</strong>
+                            <div class="text-muted small">{{ order.address.city }}</div>
+                        </div>
+                        <div class="text-end">
+                            <strong>{{ order.final_price|floatformat:0 }} تومان</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- دکمه‌های عملیات -->
+                <div class="mt-3 d-flex gap-2">
+                    <a href="#" class="btn-action btn-outline" data-bs-toggle="modal" data-bs-target="#orderDetailModal{{ order.id }}">
+                        <i class="fas fa-eye me-2"></i> جزئیات
+                    </a>
+                    <form method="post" class="d-inline-flex flex-grow-1">
+                        {% csrf_token %}
+                        <input type="hidden" name="order_id" value="{{ order.id }}">
+                        <input type="hidden" name="action" value="update_order_status">
+                        <select name="status" class="form-select flex-grow-1" onchange="this.form.submit()">
+                            <option value="PENDING" {% if order.status == 'PENDING' %}selected{% endif %}>در انتظار</option>
+                            <option value="PROCESSING" {% if order.status == 'PROCESSING' %}selected{% endif %}>در حال پردازش</option>
+                            <option value="SHIPPED" {% if order.status == 'SHIPPED' %}selected{% endif %}>ارسال شده</option>
+                            <option value="DELIVERED" {% if order.status == 'DELIVERED' %}selected{% endif %}>تحویل شده</option>
+                            <option value="CANCELED" {% if order.status == 'CANCELED' %}selected{% endif %}>لغو شده</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        <!-- صفحه‌بندی -->
+        {% if orders.has_other_pages %}
+        <div class="pagination">
+            {% if orders.has_previous %}
+            <a class="page-item" href="?page={{ orders.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+            
+            {% for num in orders.paginator.page_range %}
+            {% if orders.number == num %}
+            <span class="page-item active">{{ num }}</span>
+            {% else %}
+            <a class="page-item" href="?page={{ num }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ num }}</a>
+            {% endif %}
+            {% endfor %}
+            
+            {% if orders.has_next %}
+            <a class="page-item" href="?page={{ orders.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- نوار پایین صفحه -->
+    <div class="bottom-navbar">
+        <a href="{% url 'account:dashboard' %}" class="bottom-nav-item">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>داشبورد</span>
+        </a>
+        <a href="#" class="bottom-nav-item active">
+            <i class="fas fa-boxes"></i>
+            <span>سفارشات</span>
+        </a>
+        <a href="{% url 'account:admin_user_management' %}" class="bottom-nav-item">
+            <i class="fas fa-users"></i>
+            <span>کاربران</span>
+        </a>
+    </div>
+
+    <!-- مودال جزئیات سفارش -->
+    {% for order in orders %}
+    <div class="modal fade" id="orderDetailModal{{ order.id }}" tabindex="-1" aria-labelledby="orderDetailModalLabel{{ order.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orderDetailModalLabel{{ order.id }}">جزئیات سفارش #{{ order.order_number }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h6 class="mb-3">اطلاعات مشتری</h6>
+                                <div class="p-3 bg-light rounded">
+                                    <p class="mb-2"><strong>نام:</strong> {{ order.user.get_full_name|default:order.user.username }}</p>
+                                    <p class="mb-2"><strong>ایمیل:</strong> {{ order.user.email }}</p>
+                                    <p class="mb-0"><strong>تلفن:</strong> {{ order.user.phone_number|default:"-" }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h6 class="mb-3">آدرس ارسال</h6>
+                                <div class="p-3 bg-light rounded">
+                                    <p class="mb-2"><strong>تحویل گیرنده:</strong> {{ order.address.full_name }}</p>
+                                    <p class="mb-2"><strong>آدرس:</strong> {{ order.address.address }}</p>
+                                    <p class="mb-2"><strong>شهر:</strong> {{ order.address.city }} - {{ order.address.province }}</p>
+                                    <p class="mb-0"><strong>کد پستی:</strong> {{ order.address.postal_code }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h6 class="mb-3">اطلاعات پرداخت</h6>
+                                <div class="p-3 bg-light rounded">
+                                    <p class="mb-2"><strong>وضعیت:</strong> <span class="order-status status-{{ order.status|lower }}">{{ order.get_status_display }}</span></p>
+                                    <p class="mb-2"><strong>مبلغ کل:</strong> {{ order.final_price|floatformat:0 }} تومان</p>
+                                    <p class="mb-2"><strong>روش پرداخت:</strong> {{ order.payment_method|default:"آنلاین" }}</p>
+                                    <p class="mb-0"><strong>تاریخ سفارش:</strong> {{ order.created_at|date:"Y/m/d H:i" }}</p>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h6 class="mb-3">محصولات</h6>
+                                <div class="bg-light rounded p-3">
+                                    {% for item in order.orderitems.all %}
+                                    <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                                        <img src="{{ item.product.image.url }}" width="60" height="60" class="rounded me-3">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">{{ item.product.name }}</h6>
+                                            <div class="d-flex justify-content-between">
+                                                <small class="text-muted">{{ item.quantity }} × {{ item.price|floatformat:0 }} تومان</small>
+                                                <strong>{{ item.get_total_price|floatformat:0 }} تومان</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <a href="{% url 'cart:download_invoice' order.order_number %}" class="btn btn-primary">
+                        <i class="fas fa-file-pdf me-2"></i>دانلود فاکتور
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // فعال کردن فیلترها
+        document.querySelectorAll('.filter-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const status = this.getAttribute('data-status');
+                const url = new URL(window.location.href);
+                
+                if (status) {
+                    url.searchParams.set('status', status);
+                } else {
+                    url.searchParams.delete('status');
+                }
+                
+                window.location.href = url.toString();
+            });
+        });
+        
+        // ارسال فرم جستجو با اینتر
+        document.querySelector('.search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('searchForm').submit();
+            }
+        });
+        
+        // نمایش پیام‌ها
+        {% if messages %}
+        setTimeout(() => {
+            document.querySelector('.alert').style.display = 'none';
+        }, 5000);
+        {% endif %}
+    </script>
+</body>
+</html>

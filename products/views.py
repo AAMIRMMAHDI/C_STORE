@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from django.db.models import Avg
 from .models import Product, Review, Color, Size
 
+
 def product_list(request):
     products = Product.objects.all()
     # فیلترها
@@ -52,22 +53,27 @@ def product_list(request):
     }
     return render(request, 'products/product_list.html', context)
 
+
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug)
     product.views_count += 1
     product.save()
-    
-    related_products = Product.objects.filter(category=product.category).exclude(slug=slug)[:4]
+
+    # محاسبه میانگین امتیاز با گرد کردن به یک رقم اعشار
     avg_rating = product.reviews.aggregate(avg_rating=Avg('rating'))['avg_rating'] or 0
+    avg_rating = round(avg_rating, 1)
+
+    # محصولات مرتبط
+    related_products = Product.objects.filter(category=product.category).exclude(slug=slug)[:4]
 
     context = {
         'product': product,
         'related_products': related_products,
         'avg_rating': avg_rating,
-        'colors': product.colors.all(),
-        'sizes': product.sizes.filter(available=True),
+        # متغیرهای colors و sizes حذف شده‌اند زیرا مستقیماً در قالب استفاده می‌شوند
     }
     return render(request, 'products/product_detail.html', context)
+
 
 @login_required
 def add_review(request, slug):
@@ -81,16 +87,19 @@ def add_review(request, slug):
                 if rating < 1 or rating > 5:
                     messages.error(request, 'امتیاز باید بین ۱ تا ۵ باشد.')
                 else:
-                    Review.objects.create(
-                        product=product,
-                        user=request.user,
-                        rating=rating,
-                        comment=comment
-                    )
-                    messages.success(request, 'نظر شما با موفقیت ثبت شد.')
+                    # بررسی اینکه کاربر قبلاً نظری برای این محصول ثبت نکرده باشد
+                    if Review.objects.filter(product=product, user=request.user).exists():
+                        messages.error(request, 'شما قبلاً برای این محصول نظر ثبت کرده‌اید.')
+                    else:
+                        Review.objects.create(
+                            product=product,
+                            user=request.user,
+                            rating=rating,
+                            comment=comment
+                        )
+                        messages.success(request, 'نظر شما با موفقیت ثبت شد.')
             except ValueError:
                 messages.error(request, 'امتیاز نامعتبر است.')
         else:
             messages.error(request, 'لطفاً امتیاز و نظر خود را وارد کنید.')
-        return redirect(product.get_absolute_url())
     return redirect(product.get_absolute_url())

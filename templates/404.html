@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحه پیدا نشد - استایل شاپ</title>
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --dark: #1e1e1e;
+            --light: #f8f9fa;
+            --shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            --font-family: 'Vazir', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--light);
+            color: var(--dark);
+            direction: rtl;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            max-width: 600px;
+        }
+
+        .error-title {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .error-message {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 24px;
+        }
+
+        .error-link {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .error-link:hover {
+            background: #e05555;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <h1 class="error-title">404 - صفحه پیدا نشد</h1>
+        <p class="error-message">متأسفیم، صفحه‌ای که به دنبال آن هستید وجود ندارد یا منتقل شده است.</p>
+        <a href="{% url 'products:product_list' %}" class="error-link">بازگشت به صفحه اصلی</a>
+    </div>
+</body>
+</html>

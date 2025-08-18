@@ -346,6 +346,9 @@ body {
       <div class="profile-tab" data-tab="orders">
         <i class="fas fa-shopping-bag"></i> سفارشات
       </div>
+      <div class="profile-tab" data-tab="stories">
+        <i class="fas fa-video"></i> استوری‌ها
+      </div>
     </div>
     
     <!-- Tab Contents -->
@@ -472,6 +475,18 @@ body {
         <p>پس از ثبت اولین سفارش، جزئیات آن در این بخش نمایش داده می‌شود.</p>
         <a href="{% url 'cart:orders' %}" class="btn btn-primary mt-3">
           <i class="fas fa-shopping-bag"></i> مشاهده محصولات
+        </a>
+      </div>
+    </div>
+    
+    <div class="tab-content" id="stories">
+      <h3 class="section-title">استوری‌های من</h3>
+      <div class="empty-state">
+        <i class="fas fa-video"></i>
+        <h4>هنوز استوری ثبت نکرده‌اید</h4>
+        <p>برای افزودن استوری جدید، روی دکمه زیر کلیک کنید.</p>
+        <a href="{% url 'root:dashboard_upload_story' %}" class="btn btn-primary mt-3">
+          <i class="fas fa-plus"></i> افزودن استوری جدید
         </a>
       </div>
     </div>

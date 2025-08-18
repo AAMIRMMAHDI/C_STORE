@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}آپلود استوری | استایل شاپ{% endblock title %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --primary: #ff6b6b;
+        --primary-light: #ff8e8e;
+        --primary-dark: #e05555;
+        --secondary: #794afa;
+        --dark: #1e1e1e;
+        --dark-light: #333;
+        --light: #f8f9fa;
+        --gray: #e0e0e0;
+        --gray-dark: #b0b0b0;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+        --transition: all 0.3s ease;
+        --border-radius: 8px;
+        --font-family: 'Vazir', 'Arial', sans-serif;
+        --max-width: 1200px;
+        --padding: 24px;
+    }
+
+    .upload-container {
+        max-width: var(--max-width);
+        width: 100%;
+        padding: 0 15px;
+        margin: var(--padding) auto;
+    }
+
+    .upload-section {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: var(--padding);
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+    }
+
+    .upload-section h2 {
+        font-size: 1.75rem;
+        color: var(--primary);
+        margin-bottom: 24px;
+        text-align: center;
+        font-weight: 700;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .form-group label {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+        color: var(--dark);
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--gray);
+        border-radius: var(--border-radius);
+        font-size: 0.95rem;
+        font-family: var(--font-family);
+        transition: var(--transition);
+        box-sizing: border-box;
+        background: #f9f9f9;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+        outline: none;
+        background: white;
+    }
+
+    .form-group textarea {
+        border-radius: var(--border-radius);
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .form-group .file-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .form-group input[type="file"] {
+        display: none;
+    }
+
+    .file-input-label {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 20px;
+        background: var(--primary);
+        color: white;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .file-input-label:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+    }
+
+    .file-name {
+        font-size: 0.9rem;
+        color: var(--dark-light);
+    }
+
+    .video-preview {
+        margin-top: 16px;
+        max-width: 100%;
+        border-radius: var(--border-radius);
+        display: none;
+        box-shadow: var(--shadow);
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 14px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .submit-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+
+    .error {
+        color: var(--danger);
+        font-size: 0.9rem;
+        margin-top: 8px;
+    }
+
+    @media (max-width: 576px) {
+        .upload-container {
+            padding: 0 10px;
+        }
+
+        .upload-section {
+            padding: 16px;
+        }
+
+        .upload-section h2 {
+            font-size: 1.5rem;
+        }
+
+        .submit-btn {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<div class="upload-container">
+    <section class="upload-section">
+        <h2>آپلود استوری جدید</h2>
+        <form method="post" enctype="multipart/form-data" action="{% url 'root:dashboard_upload_story' %}">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {% if field.field.widget.input_type == 'file' %}
+                        <div class="file-input-wrapper">
+                            <label class="file-input-label" for="{{ field.id_for_label }}">
+                                <i class="fas fa-video"></i> انتخاب ویدیو
+                            </label>
+                            <span class="file-name">هیچ فایلی انتخاب نشده</span>
+                            <input type="file" id="{{ field.id_for_label }}" name="{{ field.name }}" accept="video/*">
+                        </div>
+                        <video class="video-preview" controls></video>
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="error">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-upload"></i> ثبت استوری
+            </button>
+        </form>
+    </section>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+            input.addEventListener('change', (e) => {
+                const fileName = e.target.files[0]?.name || 'هیچ فایلی انتخاب نشده';
+                const fileNameSpan = e.target.parentElement.querySelector('.file-name');
+                fileNameSpan.textContent = fileName;
+
+                const videoPreview = e.target.parentElement.parentElement.querySelector('.video-preview');
+                if (e.target.files[0]) {
+                    const url = URL.createObjectURL(e.target.files[0]);
+                    videoPreview.src = url;
+                    videoPreview.style.display = 'block';
+                } else {
+                    videoPreview.src = '';
+                    videoPreview.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock content %}

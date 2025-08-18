@@ -35,3 +35,24 @@ class AboutSection(models.Model):
 
     def __str__(self):
         return self.title
+    
+
+
+from django.db import models
+from django.contrib.auth.models import User
+from products.models import Product  # فرض بر وجود مدل Product
+
+class Story(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='stories')
+    title = models.CharField(max_length=100)
+    caption = models.TextField(max_length=500, blank=True)
+    file = models.FileField(upload_to='stories/', help_text="Upload image or video")
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True, related_name='stories')
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.title} by {self.user.username}"
+
+    class Meta:
+        ordering = ['-created_at']

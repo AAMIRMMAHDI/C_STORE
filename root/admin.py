@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ContactMessage
+from .models import *
 
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
@@ -18,3 +18,8 @@ class AboutSectionAdmin(admin.ModelAdmin):
     list_display = ('title', 'order', 'is_active')
     list_editable = ('order', 'is_active')
     search_fields = ('title', 'content')
+
+
+
+
+admin.site.register(Story)
