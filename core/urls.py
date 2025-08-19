@@ -23,7 +23,7 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import not_found_view  # فرض می‌کنیم View در root/views.py است
+from .views import not_found_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,6 +31,11 @@ urlpatterns = [
     path('', include('products.urls')),
     path('', include('cart.urls')),
     path('', include('account.urls')),
-    # مسیر عمومی برای مدیریت URLهای پیدا نشده
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += [
     re_path(r'^.*$', not_found_view, name='not_found'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]

@@ -950,9 +950,7 @@
                     <span class="discount-badge">{{ product.get_discount_percentage }}٪ تخفیف</span>
                 {% endif %}
             </div>
-            <div class="product-description">
-                <p>{{ product.description|default:'توضیحات محصول در دسترس نیست.' }}</p>
-            </div>
+
             <form class="add-to-cart-form" method="post" action="{% url 'cart:add_to_cart' product.slug %}">
                 {% csrf_token %}
                 <div class="color-selector">

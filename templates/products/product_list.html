@@ -834,39 +834,65 @@
         <div class="products-header">
             <h2>تمام محصولات</h2>
         </div>
+{% load static %}
 
-        <div class="products-grid">
-            {% for product in products %}
-                <div class="product-card">
-                    {% if product.is_new %}
-                        <span class="product-badge">جدید</span>
-                    {% elif product.discount_price %}
-                        <span class="product-badge">تخفیف</span>
+<!-- Products Header -->
+<div class="products-header">
+    <h2>تمام محصولات</h2>
+</div>
+
+<!-- Products Grid -->
+<div class="products-grid">
+    {% for product in products %}
+        <div class="product-card">
+            {% if product.is_new %}
+                <span class="product-badge">جدید</span>
+            {% elif product.discount_price %}
+                <span class="product-badge">تخفیف</span>
+            {% endif %}
+
+            <div class="product-img">
+                {% with main_image=product.images.all|dictsort:"-is_main"|first %}
+                    {% if main_image %}
+                        <img src="{{ main_image.image.url }}" alt="{{ product.name|default:'محصول بدون نام' }}">
+                    {% elif product.images.first %}
+                        <img src="{{ product.images.first.image.url }}" alt="{{ product.name|default:'محصول بدون نام' }}">
+                    {% else %}
+                        <img src="{% static 'images/no-image.png' %}" alt="بدون تصویر">
                     {% endif %}
-                    <div class="product-img">
-                        {% for image in product.images.all %}
-                            {% if image.is_main %}
-                                <img src="{{ image.image.url }}" alt="{{ product.name|default:'محصول بدون نام' }}">
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-name"><a href="{% url 'products:product_detail' product.slug %}">{{ product.name|default:'محصول بدون نام' }}</a></h3>
-                        <div class="product-price">
-                            {% if product.discount_price %}
-                                <span class="old-price">{{ product.price }} تومان</span>
-                                <span>{{ product.discount_price }} تومان</span>
-                            {% else %}
-                                <span>{{ product.price }} تومان</span>
-                            {% endif %}
-                        </div>
-                        <a href="{% url 'products:product_detail' product.slug %}" class="view-product">مشاهده محصول</a>
-                    </div>
+                {% endwith %}
+            </div>
+
+            <div class="product-info">
+                <h3 class="product-name">
+                    {% if product.slug %}
+                        <a href="{% url 'products:product_detail' product.slug %}">
+                            {{ product.name|default:'محصول بدون نام' }}
+                        </a>
+                    {% else %}
+                        {{ product.name|default:'محصول بدون نام' }}
+                    {% endif %}
+                </h3>
+                <div class="product-price">
+                    {% if product.discount_price %}
+                        <span class="old-price">{{ product.price }} تومان</span>
+                        <span>{{ product.discount_price }} تومان</span>
+                    {% else %}
+                        <span>{{ product.price }} تومان</span>
+                    {% endif %}
                 </div>
-            {% empty %}
-                <p style="text-align: center; color: var(--dark); font-size: 0.9rem; padding: 32px 0;">هیچ محصولی یافت نشد.</p>
-            {% endfor %}
+                {% if product.slug %}
+                    <a href="{% url 'products:product_detail' product.slug %}" class="view-product">مشاهده محصول</a>
+                {% else %}
+                    <span class="view-product disabled">مشاهده محصول</span>
+                {% endif %}
+            </div>
         </div>
+    {% empty %}
+        <p style="text-align: center; color: var(--dark); font-size: 0.9rem; padding: 32px 0;">هیچ محصولی یافت نشد.</p>
+    {% endfor %}
+</div>
+
 
         <!-- Pagination -->
         <div class="pagination">

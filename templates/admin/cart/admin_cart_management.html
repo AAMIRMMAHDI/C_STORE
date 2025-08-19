@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -19,16 +21,19 @@
             --danger-color: #ef4444;
             --light-color: #f8fafc;
             --dark-color: #1e293b;
+            --black: #000000;
+            --gray: #808080;
+            --green: #008000;
+            --cream: #FFFDD0;
         }
         
         body {
             font-family: 'Vazirmatn', sans-serif;
             background-color: #f8f9fc;
             color: #333;
-            padding-bottom: 80px; /* فضای منوی پایین */
+            padding-bottom: 80px;
         }
         
-        /* نوار پایین صفحه */
         .bottom-navbar {
             position: fixed;
             bottom: 0;
@@ -69,13 +74,11 @@
             color: var(--primary-color);
         }
         
-        /* محتوا */
         .main-content {
             padding: 20px;
             margin-bottom: 20px;
         }
         
-        /* کارت سفارشات */
         .order-card {
             border-radius: 10px;
             border: 1px solid #e2e8f0;
@@ -181,7 +184,6 @@
             color: #991b1b;
         }
         
-        /* جستجو */
         .search-container {
             position: sticky;
             top: 0;
@@ -220,7 +222,6 @@
             justify-content: center;
         }
         
-        /* فیلترها */
         .filter-container {
             display: flex;
             gap: 10px;
@@ -245,7 +246,6 @@
             color: white;
         }
         
-        /* دکمه‌ها */
         .btn-action {
             display: inline-flex;
             align-items: center;
@@ -269,7 +269,6 @@
             color: #64748b;
         }
         
-        /* صفحه‌بندی */
         .pagination {
             display: flex;
             justify-content: center;
@@ -294,7 +293,6 @@
             color: white;
         }
         
-        /* حالت دسکتاپ */
         @media (min-width: 992px) {
             .bottom-navbar {
                 display: none;
@@ -380,13 +378,35 @@
                 <!-- محصولات -->
                 {% for item in order.orderitems.all|slice:":3" %}
                 <div class="order-item">
-                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="order-item-img">
+                    {% with main_image=item.product.images.all|dictsort:"-is_main"|first %}
+                        {% if main_image %}
+                            <a href="{% url 'products:product_detail' item.product.slug %}">
+                                <img src="{{ main_image.image.url }}" alt="{{ item.product.name|default:'محصول بدون نام' }}" class="order-item-img">
+                            </a>
+                        {% elif item.product.images.first %}
+                            <a href="{% url 'products:product_detail' item.product.slug %}">
+                                <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name|default:'محصول بدون نام' }}" class="order-item-img">
+                            </a>
+                        {% else %}
+                            <a href="{% url 'products:product_detail' item.product.slug %}">
+                                <img src="{% static 'images/no-image.png' %}" alt="بدون تصویر" class="order-item-img">
+                            </a>
+                        {% endif %}
+                    {% endwith %}
                     <div class="order-item-info">
-                        <div class="order-item-name">{{ item.product.name }}</div>
+                        <div class="order-item-name">
+                            {% if item.product.slug %}
+                                <a href="{% url 'products:product_detail' item.product.slug %}">{{ item.product.name|default:'محصول بدون نام' }}</a>
+                            {% else %}
+                                {{ item.product.name|default:'محصول بدون نام' }}
+                            {% endif %}
+                        </div>
                         <div class="order-item-meta">
                             <span>{{ item.quantity }} عدد</span>
                             <span>{{ item.price|floatformat:0 }} تومان</span>
-                            {% if item.color %}<span>{{ item.color.name }}</span>{% endif %}
+                            {% if item.color %}
+                                <span style="color: {{ item.color.hex_code }};">{{ item.color.name }}</span>
+                            {% endif %}
                             {% if item.size %}<span>{{ item.size.name }}</span>{% endif %}
                         </div>
                     </div>
@@ -432,6 +452,8 @@
                 </div>
             </div>
         </div>
+        {% empty %}
+        <p style="text-align: center; color: var(--dark-color); font-size: 0.9rem; padding: 32px 0;">هیچ سفارشی یافت نشد.</p>
         {% endfor %}
         
         <!-- صفحه‌بندی -->
@@ -524,9 +546,29 @@
                                 <div class="bg-light rounded p-3">
                                     {% for item in order.orderitems.all %}
                                     <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
-                                        <img src="{{ item.product.image.url }}" width="60" height="60" class="rounded me-3">
+                                        {% with main_image=item.product.images.all|dictsort:"-is_main"|first %}
+                                            {% if main_image %}
+                                                <a href="{% url 'products:product_detail' item.product.slug %}">
+                                                    <img src="{{ main_image.image.url }}" width="60" height="60" class="rounded me-3">
+                                                </a>
+                                            {% elif item.product.images.first %}
+                                                <a href="{% url 'products:product_detail' item.product.slug %}">
+                                                    <img src="{{ item.product.images.first.image.url }}" width="60" height="60" class="rounded me-3">
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'products:product_detail' item.product.slug %}">
+                                                    <img src="{% static 'images/no-image.png' %}" width="60" height="60" class="rounded me-3">
+                                                </a>
+                                            {% endif %}
+                                        {% endwith %}
                                         <div class="flex-grow-1">
-                                            <h6 class="mb-1">{{ item.product.name }}</h6>
+                                            <h6 class="mb-1">
+                                                {% if item.product.slug %}
+                                                    <a href="{% url 'products:product_detail' item.product.slug %}">{{ item.product.name|default:'محصول بدون نام' }}</a>
+                                                {% else %}
+                                                    {{ item.product.name|default:'محصول بدون نام' }}
+                                                {% endif %}
+                                            </h6>
                                             <div class="d-flex justify-content-between">
                                                 <small class="text-muted">{{ item.quantity }} × {{ item.price|floatformat:0 }} تومان</small>
                                                 <strong>{{ item.get_total_price|floatformat:0 }} تومان</strong>
