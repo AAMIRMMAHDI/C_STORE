@@ -8,7 +8,6 @@ from .models import Product, Review, Color, Size
 
 def product_list(request):
     products = Product.objects.all()
-    # فیلترها
     category = request.GET.get('category')
     color = request.GET.get('color')
     min_price = request.GET.get('min_price')
@@ -59,18 +58,15 @@ def product_detail(request, slug):
     product.views_count += 1
     product.save()
 
-    # محاسبه میانگین امتیاز با گرد کردن به یک رقم اعشار
     avg_rating = product.reviews.aggregate(avg_rating=Avg('rating'))['avg_rating'] or 0
     avg_rating = round(avg_rating, 1)
 
-    # محصولات مرتبط
     related_products = Product.objects.filter(category=product.category).exclude(slug=slug)[:4]
 
     context = {
         'product': product,
         'related_products': related_products,
         'avg_rating': avg_rating,
-        # متغیرهای colors و sizes حذف شده‌اند زیرا مستقیماً در قالب استفاده می‌شوند
     }
     return render(request, 'products/product_detail.html', context)
 
@@ -87,7 +83,6 @@ def add_review(request, slug):
                 if rating < 1 or rating > 5:
                     messages.error(request, 'امتیاز باید بین ۱ تا ۵ باشد.')
                 else:
-                    # بررسی اینکه کاربر قبلاً نظری برای این محصول ثبت نکرده باشد
                     if Review.objects.filter(product=product, user=request.user).exists():
                         messages.error(request, 'شما قبلاً برای این محصول نظر ثبت کرده‌اید.')
                     else:

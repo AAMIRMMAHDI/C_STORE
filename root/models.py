@@ -40,7 +40,7 @@ class AboutSection(models.Model):
 
 from django.db import models
 from django.contrib.auth.models import User
-from products.models import Product  # فرض بر وجود مدل Product
+from products.models import Product 
 
 class Story(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='stories')

@@ -10,8 +10,8 @@ urlpatterns = [
     path('about/', views.about_view, name='about'),
     path('dashboard/upload-story/', views.dashboard_upload_story, name='dashboard_upload_story'),
     path('story/<int:story_id>/', views.get_story_data, name='get_story_data'),
-    path('stories/', views.get_stories, name='stories'),  # تغییر به get_stories برای JSON
-    # پنل مدیریت
+    path('stories/', views.get_stories, name='stories'), 
+
     path('admin-panel/', views.dashboard, name='dashboard'),
     path('admin-panel/contacts/', views.contact_list, name='contact_list'),
     path('admin-panel/contacts/<int:pk>/', views.contact_detail, name='contact_detail'),

@@ -6,30 +6,26 @@ from .forms import StoryForm, ContactForm
 from products.models import Product
 from django.http import JsonResponse
 
-# تابع بررسی دسترسی استاف
 def staff_required(user):
     return user.is_staff
 
-# صفحه اصلی
 def index(request):
     stories = Story.objects.filter(is_active=True)
     featured_products = Product.objects.filter(is_featured=True)[:6]
     if not featured_products:
-        featured_products = Product.objects.filter(is_new=True)[:6]  # در صورت نبود محصولات ویژه، از محصولات جدید
+        featured_products = Product.objects.filter(is_new=True)[:6] 
         if not featured_products:
-            featured_products = Product.objects.filter(discount_price__isnull=False)[:6]  # یا محصولات تخفیف‌دار
+            featured_products = Product.objects.filter(discount_price__isnull=False)[:6] 
     context = {
         'stories': stories,
         'featured_products': featured_products,
     }
     return render(request, 'root/index.html', context)
 
-# دریافت لیست استوری‌ها برای AJAX
 def get_stories(request):
     stories = Story.objects.filter(is_active=True).values('id', 'title', 'file', 'caption')
     return JsonResponse(list(stories), safe=False)
 
-# آپلود استوری در داشبورد
 @login_required
 def dashboard_upload_story(request):
     if request.method == 'POST':
@@ -44,7 +40,6 @@ def dashboard_upload_story(request):
         form = StoryForm()
     return render(request, 'account/upload.html', {'form': form})
 
-# دریافت اطلاعات استوری برای نمایش در مدال
 def get_story_data(request, story_id):
     try:
         story = Story.objects.get(id=story_id, is_active=True)
@@ -61,7 +56,6 @@ def get_story_data(request, story_id):
     except Story.DoesNotExist:
         return JsonResponse({'error': 'استوری یافت نشد'}, status=404)
 
-# صفحه تماس
 def contact_view(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
@@ -73,39 +67,33 @@ def contact_view(request):
         form = ContactForm()
     return render(request, 'root/contact.html', {'form': form})
 
-# صفحه درباره ما
 def about_view(request):
     sections = AboutSection.objects.filter(is_active=True).order_by('order')
     return render(request, 'root/about.html', {'sections': sections})
 
-# داشبورد ادمین
 @user_passes_test(staff_required)
 @login_required
 def dashboard(request):
     return render(request, "admin/root/dashboard.html")
 
-# لیست پیام‌های تماس
 @user_passes_test(staff_required)
 @login_required
 def contact_list(request):
     messages = ContactMessage.objects.all().order_by("-created_at")
     return render(request, "admin/root/contact_list.html", {"messages": messages})
 
-# جزئیات پیام تماس
 @user_passes_test(staff_required)
 @login_required
 def contact_detail(request, pk):
     msg = get_object_or_404(ContactMessage, pk=pk)
     return render(request, "admin/root/contact_detail.html", {"msg": msg})
 
-# لیست بخش‌های درباره ما
 @user_passes_test(staff_required)
 @login_required
 def about_list(request):
     sections = AboutSection.objects.all().order_by("order")
     return render(request, "admin/root/about_list.html", {"sections": sections})
 
-# ویرایش بخش درباره ما
 @user_passes_test(staff_required)
 @login_required
 def about_edit(request, pk):

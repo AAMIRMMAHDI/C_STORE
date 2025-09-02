@@ -10,7 +10,6 @@ import pdfkit
 from django.template.loader import render_to_string
 from django import forms
 
-# Check if the user is an admin
 def is_admin(user):
     return user.is_staff or user.is_superuser
 
@@ -177,7 +176,6 @@ def payment(request):
 
     if request.method == 'POST':
         try:
-            # ابتدا سفارش ساخته میشه
             order = Order.objects.create(
                 user=request.user,
                 address=address,
@@ -188,7 +186,6 @@ def payment(request):
                 status='PENDING',
                 payment_method='آنلاین'
             )
-            # شماره سفارش کوتاه و مرتب
             order.order_number = f"{order.id:06d}"
             order.save()
 
@@ -226,7 +223,7 @@ def orders(request):
     orders = Order.objects.filter(
         user=request.user,
         order_number__isnull=False,
-        order_number__gt=''  # فیلتر کردن order_number غیرخالی
+        order_number__gt=''
     ).order_by('-created_at')
     if status in ['PENDING', 'SHIPPED', 'DELIVERED', 'CANCELED']:
         orders = orders.filter(status=status)
@@ -303,29 +300,24 @@ def download_invoice(request, order_number):
 @login_required
 @user_passes_test(is_admin)
 def admin_cart_management(request):
-    # Get filters
     order_status = request.GET.get('status', '')
     user_query = request.GET.get('user', '')
 
-    # Fetch all carts and orders
     carts = Cart.objects.all().select_related('user')
     orders = Order.objects.filter(order_number__isnull=False, order_number__gt='').select_related('user', 'address')
 
-    # Calculate total price for each cart
     cart_totals = {}
     for cart in carts:
         total_price = sum(item.get_total_price() for item in cart.cartitem_set.all())
         total_discount = sum(item.get_discount() for item in cart.cartitem_set.all())
         cart_totals[cart.id] = total_price - total_discount
 
-    # Apply filters
     if order_status in ['PENDING', 'SHIPPED', 'DELIVERED', 'CANCELED']:
         orders = orders.filter(status=order_status)
     if user_query:
         orders = orders.filter(user__username__icontains=user_query)
         carts = carts.filter(Q(user__username__icontains=user_query) | Q(session_id__icontains=user_query))
 
-    # Handle POST actions
     if request.method == 'POST':
         action = request.POST.get('action')
         cart_id = request.POST.get('cart_id')
@@ -386,6 +378,6 @@ def admin_cart_management(request):
         'current_status': order_status,
         'user_query': user_query,
         'cart_totals': cart_totals,
-        'cart_items_form': forms.Form(),  # Placeholder for cart item editing
+        'cart_items_form': forms.Form(), 
     }
     return render(request, 'admin/cart/admin_cart_management.html', context)

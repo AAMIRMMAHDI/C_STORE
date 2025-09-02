@@ -10,7 +10,6 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserChangeForm
 from django import forms
 
-# Check if the user is an admin
 def is_admin(user):
     return user.is_staff or user.is_superuser
 
@@ -21,7 +20,6 @@ def login_view(request):
     if request.method == 'POST' and form.is_valid():
         user = form.get_user()
         login(request, user)
-        # ادغام سبد خرید مهمان با کاربر
         session_cart, _ = Cart.objects.get_or_create(
             user=None,
             session_id=request.session.session_key or request.session.create()
@@ -50,7 +48,7 @@ def register_view(request):
     if request.method == 'POST' and form.is_valid():
         user = form.save()
         login(request, user)
-        # ادغام سبد خرید مهمان با کاربر
+
         session_cart, _ = Cart.objects.get_or_create(
             user=None,
             session_id=request.session.session_key or request.session.create()
@@ -107,8 +105,8 @@ def logout_view(request):
 def dashboard(request):
     orders = Order.objects.filter(user=request.user, order_number__isnull=False).order_by('-created_at')[:3]
     favorites_count = Favorite.objects.filter(user=request.user).count()
-    comments_count = 0  # بعداً مدل نظرات رو اضافه کن
-    credit = 250000  # بعداً از مدل کیف‌پول بگیر
+    comments_count = 0
+    credit = 250000  
     context = {
         'user': request.user,
         'orders': orders,
@@ -144,7 +142,7 @@ def admin_user_management(request):
         user = get_object_or_404(User, id=user_id)
 
         if action == 'delete':
-            if user != request.user:  # Prevent admin from deleting their own account
+            if user != request.user: 
                 user.delete()
                 messages.success(request, f'کاربر {user.username} با موفقیت حذف شد.')
             else:
